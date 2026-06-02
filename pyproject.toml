@@ -12,8 +12,8 @@ description = "Transform any Python function into a web interface automatically"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "pytypeinput",
-    "pytypeinputweb",
+    "pytypeinput==1.0.2",
+    "pytypeinputweb==1.0.3",
     "fastapi",
     "uvicorn",
     "jinja2",
