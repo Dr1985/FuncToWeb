@@ -14,6 +14,7 @@
 ### Changed
 - **Default `limit_max_requests` raised from 1000 to 10000** — the previous limit recycled the Uvicorn worker too aggressively for apps serving many static assets per page (e.g. image grids), causing the process to restart mid-session
 - **Fixed pytypeinput and pytypeinputweb version numbers in dependencies** — updated to the latest versions (1.0.2 and 1.0.3 respectively) to ensure compatibility with the new features and fixes in those libraries
+- **Uploads and returned-files directories are now created lazily** — `uploads/` and `returned_files/` are no longer created at server startup; each directory is created on demand the first time a file is actually uploaded or returned, so apps with no file I/O never create them
 
 ## [1.0.1] - 2026-04-28
 

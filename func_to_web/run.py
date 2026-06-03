@@ -60,12 +60,10 @@ def run(
     create_pytypeinput_assets()
 
     save_file_handler.UPLOADS_DIR = Path(uploads_dir)
-    save_file_handler.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
     save_file_handler.MAX_FILE_SIZE = max_file_size
     save_file_handler.KEEP_UPLOADS = keep_uploads
 
     return_file_handler.RETURNS_DIR = Path(returns_dir)
-    return_file_handler.RETURNS_DIR.mkdir(parents=True, exist_ok=True)
     return_file_handler.RETURNS_LIFETIME_SECONDS = returns_lifetime
 
     call_function.STREAM_PRINTS = stream_prints
