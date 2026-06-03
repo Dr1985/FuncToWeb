@@ -7,5 +7,5 @@
     <p class="functoweb-description">{{ description }}</p>
     {% endif %}
     
-    <pti-form data-action="{{ action }}" params='{{ params_json }}'></pti-form>
+    <pti-form data-action="{{ action }}" params='{{ params_json | e }}'></pti-form>
 </div>

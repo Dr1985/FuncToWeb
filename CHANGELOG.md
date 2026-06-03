@@ -9,6 +9,8 @@
   - `None` is now preserved through serialization and the row-click handler omits the parameter entirely, matching the prefill contract (absent param == no value)
 - **`ActionTable` row click dropped embed mode when redirecting to another function** — clicking a row in an embedded form (`?__embed=1`) navigated to the target function without the embed flag, so the destination rendered with full chrome (sidebar, theme toggle, opaque background) inside the iframe
   - The row-click handler now detects `__embed=1` on the current page and propagates it to the redirect URL, keeping the whole action chain embedded
+- **Single quotes / apostrophes in `Description(...)` and `PatternMessage(...)` broke the form** — param metadata is serialized to JSON and injected into the `<pti-form params='...'>` attribute, which is delimited by single quotes; any apostrophe in the text closed the attribute early and broke the rendered form
+  - The serialized JSON is now HTML-escaped in the template (`params='{{ params_json | e }}'`), so apostrophes (and `"`, `<`, `&`) survive as entities and are decoded back to the original JSON when the `<pti-form>` web component reads the attribute
 ### Changed
 - **Default `limit_max_requests` raised from 1000 to 10000** — the previous limit recycled the Uvicorn worker too aggressively for apps serving many static assets per page (e.g. image grids), causing the process to restart mid-session
 - **Fixed pytypeinput and pytypeinputweb version numbers in dependencies** — updated to the latest versions (1.0.2 and 1.0.3 respectively) to ensure compatibility with the new features and fixes in those libraries
