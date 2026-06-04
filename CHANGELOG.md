@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.0] - 2026-06-04
+## [1.5.0] - 2026-06-04 (WIP)
 
 This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and expose a cleaner API for building SPAs.
 
