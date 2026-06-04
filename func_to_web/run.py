@@ -57,7 +57,7 @@ def run(
         assets_dir: Optional directory served at /assets.
         **uvicorn_kwargs: Additional Uvicorn configuration.
     """
-    print_beta_warning()
+    
     create_pytypeinput_assets()
 
     if uploads_dir is None:

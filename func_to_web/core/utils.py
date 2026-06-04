@@ -50,30 +50,6 @@ def create_pytypeinput_assets() -> dict[str, Path]:
 
     return {'css': css_file, 'js': js_file}
 
-def print_beta_warning():
-    from .. import __version__
-
-    """Print beta version warning message."""
-    print("=" * 70)
-    print(f"FuncToWeb {__version__} BETA")
-    print("=" * 70)
-    print("This is a major rewrite and introduces breaking changes.")
-    print()
-    print("If something that worked before no longer works:")
-    print("   • It may require small updates to your code")
-    print("   • Most APIs remain similar, but some features have changed")
-    print("     (e.g. groups structure, run() parameters)")
-    print()
-    print("If you encounter actual bugs:")
-    print("   • Report them: https://github.com/offerrall/functoweb/issues")
-    print()
-    print("Need stability?")
-    print("   • pip install func-to-web==0.9.14")
-    print()
-    print("Thank you for testing!")
-    print("=" * 70)
-    print()
-
 def encode_favicon_to_base64(favicon_path: str | Path) -> str:
     """Encode a favicon file to base64 data URI."""
     path = Path(favicon_path)
