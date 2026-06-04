@@ -14,7 +14,7 @@ def basic(event_date: date, start_time: time):
 run(basic)
 ```
 
-![Basic Usage](images/datetime1.jpg)
+![Basic Usage](../images/datetime1.jpg)
 
 ## Default Value
 
@@ -31,7 +31,7 @@ def defaults(
 run(defaults)
 ```
 
-![Default Value](images/datetime2.jpg)
+![Default Value](../images/datetime2.jpg)
 
 Use `date.today()` to default to the current date:
 
@@ -48,7 +48,7 @@ def defaults_today(
 run(defaults_today)
 ```
 
-![Default Today](images/datetime3.jpg)
+![Default Today](../images/datetime3.jpg)
 
 ## Label & Description
 
@@ -67,7 +67,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/datetime4.jpg)
+![Label & Description](../images/datetime4.jpg)
 
 ## Optional
 
@@ -86,7 +86,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/datetime5.jpg)
+![Optional](../images/datetime5.jpg)
 
 ## List
 
@@ -102,4 +102,4 @@ run(list_inputs)
 
 > For list constraints and more, see [Lists](lists.md).
 
-![List](images/datetime6.jpg)
+![List](../images/datetime6.jpg)

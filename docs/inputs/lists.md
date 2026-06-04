@@ -13,7 +13,7 @@ def basic(names: list[str], scores: list[int]):
 run(basic)
 ```
 
-![Basic Usage](images/list1.jpg)
+![Basic Usage](../images/list1.jpg)
 
 ## Default Values
 
@@ -26,7 +26,7 @@ def defaults(tags: list[str] = ["python", "web"]):
 run(defaults)
 ```
 
-![Default Values](images/list2.jpg)
+![Default Values](../images/list2.jpg)
 
 ## Supported Types
 
@@ -109,7 +109,7 @@ def combined_constraints(
 run(combined_constraints)
 ```
 
-![Item + List Constraints Combined](images/list3.jpg)
+![Item + List Constraints Combined](../images/list3.jpg)
 
 ## Item UI (Label, Description, Step, Slider...)
 
@@ -130,7 +130,7 @@ def item_ui(
 run(item_ui)
 ```
 
-![Item UI](images/list4.jpg)
+![Item UI](../images/list4.jpg)
 
 ## List-Level Label & Description
 
@@ -157,7 +157,7 @@ run(list_label)
 
 > `Label("Score List")` and `Description("Add between 1 and 5 scores")` override `Label("Item Score")` for the block header.
 
-![List-Level Label & Description](images/list5.jpg)
+![List-Level Label & Description](../images/list5.jpg)
 
 ## Optional List
 
@@ -172,7 +172,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional List](images/list6.jpg)
+![Optional List](../images/list6.jpg)
 
 ## Limitations
 

@@ -23,7 +23,7 @@ The form itself is rendered exactly as in the standalone page — same widgets, 
 
 ## Combine with URL Prefill
 
-Embed mode pairs naturally with [URL Prefill](url_prefill.md) — pass values as query params and you get a fully pre-configured embedded form:
+Embed mode pairs naturally with [URL Prefill](url-prefill.md) — pass values as query params and you get a fully pre-configured embedded form:
 
 ```html
 <iframe src="http://127.0.0.1:8000/edit-user?__embed=1&id=42&name=Alice"></iframe>

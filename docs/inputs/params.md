@@ -23,7 +23,7 @@ run(basic)
 
 FuncToWeb expands `UserData` into three individual form fields — `name`, `email`, and `age` — exactly as if you had declared them directly on the function.
 
-![Basic Usage](images/params1.jpg)
+![Basic Usage](../images/params1.jpg)
 
 ## Reusing Across Functions
 
@@ -50,8 +50,8 @@ run([create_user, edit_user])
 
 Change `UserData` once and it updates every function that uses it.
 
-![Creating Users](images/params2.jpg)
-![Editing Users](images/params3.jpg)
+![Creating Users](../images/params2.jpg)
+![Editing Users](../images/params3.jpg)
 
 ## It's Just a Class
 
@@ -77,7 +77,7 @@ run(just_a_class)
 
 FuncToWeb only reads the **type-annotated fields** — everything else is ignored by the form renderer.
 
-![It's Just a Class](images/params4.jpg)
+![It's Just a Class](../images/params4.jpg)
 
 ## Mixing Params with Other Parameters
 

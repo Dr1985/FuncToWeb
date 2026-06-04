@@ -22,7 +22,7 @@ run(static)
 
 All options must be the same type. Static values are validated server-side.
 
-![Static Dropdowns](images/dropdown1.jpg)
+![Static Dropdowns](../images/dropdown1.jpg)
 
 ## Enum Dropdowns
 
@@ -50,7 +50,7 @@ run(enum_dropdown)
 
 Useful when the same options are reused across multiple functions.
 
-![Enum Dropdowns](images/dropdown2.jpg)
+![Enum Dropdowns](../images/dropdown2.jpg)
 
 ## Dynamic Dropdowns
 
@@ -106,7 +106,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/dropdown6.jpg)
+![Label & Description](../images/dropdown6.jpg)
 
 ## Optional
 
@@ -122,4 +122,4 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/dropdown7.jpg)
+![Optional](../images/dropdown7.jpg)

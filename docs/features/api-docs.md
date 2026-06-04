@@ -54,7 +54,7 @@ For file uploads, send each file as a separate multipart field with the paramete
 The same mechanism that powers the web UI (typed parameters, validation, file handling) doubles as a self-describing API. You write your function once and get:
 
 - A web form for humans.
-- Embeddable iframes via URL prefill (see [URL Prefill](url_prefill.md)) and embed mode (see [Embed Mode](embed.md)).
+- Embeddable iframes via URL prefill (see [URL Prefill](url-prefill.md)) and embed mode (see [Embed Mode](embed.md)).
 - A scriptable, agent-callable API via `/doc`.
 
 No extra code, no extra dependencies.

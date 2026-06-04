@@ -13,7 +13,7 @@ def basic(name: str):
 run(basic)
 ```
 
-![Basic Usage](images/string1.jpg)
+![Basic Usage](../images/string1.jpg)
 
 ## Default Value
 
@@ -26,7 +26,7 @@ def defaults(name: str = "World"):
 run(defaults)
 ```
 
-![Default Value](images/string2.jpg)
+![Default Value](../images/string2.jpg)
 
 ## Constraints
 
@@ -52,7 +52,7 @@ run(constraints)
 | `max_length` | Maximum number of characters       |
 | `pattern`    | Regex pattern the value must match |
 
-![Constraints](images/string3.jpg)
+![Constraints](../images/string3.jpg)
 
 ## Placeholder
 
@@ -67,7 +67,7 @@ def placeholder(name: Annotated[str, Placeholder("e.g. John Doe")]):
 run(placeholder)
 ```
 
-![Placeholder](images/string4.jpg)
+![Placeholder](../images/string4.jpg)
 
 ## Pattern Message
 
@@ -91,7 +91,7 @@ def pattern_message(
 run(pattern_message)
 ```
 
-![Pattern Message](images/string5.jpg)
+![Pattern Message](../images/string5.jpg)
 
 ## Password
 
@@ -108,7 +108,7 @@ def password(pw: Annotated[str, IsPassword()]):
 run(password)
 ```
 
-![Password](images/string6.jpg)
+![Password](../images/string6.jpg)
 
 ## Textarea
 
@@ -125,7 +125,7 @@ def textarea(message: Annotated[str, Rows(5)]):
 run(textarea)
 ```
 
-![Textarea](images/string7.jpg)
+![Textarea](../images/string7.jpg)
 
 ## Label & Description
 
@@ -142,7 +142,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/string8.jpg)
+![Label & Description](../images/string8.jpg)
 
 ## Email
 
@@ -160,7 +160,7 @@ run(email)
 
 Works like any `str` — you can combine it with `Label`, `Description`, `Optional`, `List`, etc.
 
-![Email](images/string9.jpg)
+![Email](../images/string9.jpg)
 
 ## Optional
 
@@ -175,7 +175,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/string10.jpg)
+![Optional](../images/string10.jpg)
 
 ## Dropdown
 
@@ -191,7 +191,7 @@ run(dropdown)
 
 > For dynamic options and Enum dropdowns, see [Dropdowns](dropdown.md).
 
-![Dropdown](images/string11.jpg)
+![Dropdown](../images/string11.jpg)
 
 ## List
 
@@ -206,4 +206,4 @@ run(list_inputs)
 
 > For list constraints and more, see [Lists](lists.md).
 
-![List](images/string12.jpg)
+![List](../images/string12.jpg)

@@ -22,7 +22,7 @@ def basic(
 run(basic)
 ```
 
-![Basic Usage](images/optional1.jpg)
+![Basic Usage](../images/optional1.jpg)
 
 ## Explicit Control
 
@@ -43,7 +43,7 @@ run(explicit_control)
 
 > `OptionalEnabled` and `OptionalDisabled` are `None` at runtime — they only affect the initial toggle state in the UI.
 
-![Explicit Control](images/optional2.jpg)
+![Explicit Control](../images/optional2.jpg)
 
 ## Works with All Types
 
@@ -78,7 +78,7 @@ def optional_list(tags: list[str] | None = None):
 run(optional_list)
 ```
 
-![Optional Lists](images/optional3.jpg)
+![Optional Lists](../images/optional3.jpg)
 
 ## Handling None in Your Function
 

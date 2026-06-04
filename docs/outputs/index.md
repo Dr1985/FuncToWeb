@@ -18,7 +18,7 @@ def text(name: str):
 run(text)
 ```
 
-![Text](images/output1.jpg)
+![Text](../images/output1.jpg)
 
 ## Images
 
@@ -46,7 +46,7 @@ run([blur, plot])
 
 > PIL and Matplotlib are optional dependencies — install them only if needed.
 
-![Images](images/output2.jpg)
+![Images](../images/output2.jpg)
 
 ## Tables
 
@@ -71,8 +71,8 @@ def get_sales():
 run([get_users, get_sales])
 ```
 
-![Tables](images/output4.jpg)
-![Tables](images/output5.jpg)
+![Tables](../images/output4.jpg)
+![Tables](../images/output5.jpg)
 
 Supported formats:
 
@@ -124,7 +124,7 @@ def export():
 
 > Returned files are stored in `<os-temp-dir>/func_to_web_returned_files` by default and deleted after `returns_lifetime` seconds. Configure both via `run(returns_dir=..., returns_lifetime=3600)`.
 
-![File Downloads](images/output6.jpg)
+![File Downloads](../images/output6.jpg)
 
 ## ActionTable
 
@@ -148,8 +148,8 @@ run([list_users, HiddenFunction(edit_user)])
 
 Column names are matched to the destination function's parameter names. Matching columns are prefilled — non-matching columns are shown in the table but ignored during navigation.
 
-![ActionTable](images/output7.jpg)
-![ActionTable](images/output8.jpg)
+![ActionTable](../images/output7.jpg)
+![ActionTable](../images/output8.jpg)
 
 ## Data Sources
 
@@ -199,7 +199,7 @@ Clicking a row navigates to the destination function's URL with the row data as 
 /edit-user?id=1&name=Alice&email=alice@example.com
 ```
 
-This is the same URL prefill mechanism available to any external app — see [URL Prefill](url_prefill.md).
+This is the same URL prefill mechanism available to any external app — see [URL Prefill](../features/url-prefill.md).
 
 > ⚠️ `ActionTable` is experimental. Works well with simple types (`str`, `int`, `float`). Files and complex types are not supported via row navigation.
 
@@ -226,7 +226,7 @@ def multiple_outputs(photo: ImageFile):
 
 Each item is rendered in its own block in order. `None` items are skipped.
 
-![Multiple Outputs](images/output10.jpg)
+![Multiple Outputs](../images/output10.jpg)
 
 ## Print Output
 
@@ -251,7 +251,7 @@ Disable streaming if you don't need it:
 run(long_task, stream_prints=False)
 ```
 
-![Print Output](images/output9.jpg)
+![Print Output](../images/output9.jpg)
 
 ## Errors
 

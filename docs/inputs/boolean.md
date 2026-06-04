@@ -13,7 +13,7 @@ def basic(active: bool):
 run(basic)
 ```
 
-![Basic Usage](images/boolean1.jpg)
+![Basic Usage](../images/boolean1.jpg)
 
 ## Default Value
 
@@ -26,7 +26,7 @@ def defaults(active: bool = True):
 run(defaults)
 ```
 
-![Default Value](images/boolean2.jpg)
+![Default Value](../images/boolean2.jpg)
 
 ## Label & Description
 
@@ -43,7 +43,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/boolean3.jpg)
+![Label & Description](../images/boolean3.jpg)
 
 ## Optional
 
@@ -58,7 +58,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/boolean4.jpg)
+![Optional](../images/boolean4.jpg)
 
 ## List
 
@@ -73,4 +73,4 @@ run(list_inputs)
 
 > For list constraints and more, see [Lists](lists.md).
 
-![List](images/boolean5.jpg)
+![List](../images/boolean5.jpg)

@@ -14,7 +14,7 @@ def basic(document: File, photo: ImageFile):
 run(basic)
 ```
 
-![Basic Usage](images/file1.jpg)
+![Basic Usage](../images/file1.jpg)
 
 ## Available Types
 
@@ -82,7 +82,7 @@ Click the **+** button in the UI to add more files from different folders.
 
 > For list constraints and more, see [Lists](lists.md).
 
-![List of Files](images/file4.jpg)
+![List of Files](../images/file4.jpg)
 
 ## Optional
 
@@ -100,7 +100,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/file5.jpg)
+![Optional](../images/file5.jpg)
 
 ## Label & Description
 
@@ -117,7 +117,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/file6.jpg)
+![Label & Description](../images/file6.jpg)
 
 ## File Size Limit
 

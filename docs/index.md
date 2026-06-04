@@ -1,40 +1,31 @@
-# Transform any Python function into a web interface automatically
+# FuncToWeb — Documentation
 
-<div class="grid" markdown>
+Type hints → Web UI. One page per feature. Start from the
+[project README](../README.md) for the overview, or jump straight in:
 
-<div markdown>
+## Inputs
 
-```python
-from func_to_web import run
+- [Numeric](inputs/numeric.md)
+- [String](inputs/string.md)
+- [Boolean](inputs/boolean.md)
+- [Date & Time](inputs/datetime.md)
+- [Colors](inputs/color.md)
+- [Files](inputs/files.md)
+- [Dropdown](inputs/dropdown.md)
+- [Lists](inputs/lists.md)
+- [Optional](inputs/optional.md)
+- [Params](inputs/params.md)
+- [Composition](inputs/composition.md)
 
-# Minimal example
-def divide(a: float, b: float):
-    return a / b
+## Outputs
 
-run(divide)
-```
+- [Output types](outputs/index.md) — text, images, plots, tables, files, multiple outputs
 
-Open `http://127.0.0.1:8000` → **Done!**
+## Features
 
-- [Input Types](numeric.md) - Learn about supported input types, validation and custom
-- [Output Types](outputs.md) - Return files, images, plots, tables...
-- [API Endpoint](api_doc.md) - Auto-generated `/doc` for scripts and AI agents
-- [Embed Mode](embed.md) - Drop forms into existing sites via iframe
-- [Other Features](config.md) - Multiple functions, server options...
-
-</div>
-
-<div markdown>
-
-![func-to-web Demo](images/quick.jpg)
-
-</div>
-
-```bash
-pip install func-to-web              # Last tagged release from PyPI (recommended)
-pip install git+https://github.com/offerrall/FuncToWeb.git   # latest from GitHub (more features, but possibly unstable)
-```
-
-if you find in the docs that a feature is only available in the GitHub version, install from there to use it. Otherwise, the PyPI version is recommended for stability and ease of installation.
-
-</div>
+- [Configuration](features/configuration.md) — host, port, reverse proxy, `create_app()`
+- [Multiple functions](features/multiple-functions.md) — index page or groups
+- [URL prefill](features/url-prefill.md) — open forms with values from query params
+- [API docs for AI](features/api-docs.md) — auto-generated `/doc` for scripts and agents
+- [Embed mode](features/embed.md) — drop forms into existing sites via iframe
+- [Dark mode](features/dark-mode.md)

@@ -13,7 +13,7 @@ def basic(count: int, ratio: float):
 run(basic)
 ```
 
-![Basic Usage](images/numeric1.jpg)
+![Basic Usage](../images/numeric1.jpg)
 
 ## Default Value
 
@@ -26,7 +26,7 @@ def defaults(count: int = 42, ratio: float = 3.14):
 run(defaults)
 ```
 
-![Default Value](images/numeric2.jpg)
+![Default Value](../images/numeric2.jpg)
 
 ## Constraints
 
@@ -53,7 +53,7 @@ run(constraints)
 | `gt`       | Greater than (>)          |
 | `lt`       | Less than (<)             |
 
-![Constraints](images/numeric3.jpg)
+![Constraints](../images/numeric3.jpg)
 
 ## Step
 
@@ -73,7 +73,7 @@ def step(
 run(step)
 ```
 
-![Step](images/numeric4.jpg)
+![Step](../images/numeric4.jpg)
 
 ## Slider
 
@@ -97,7 +97,7 @@ run(slider)
 
 `Slider(show_value=False)` hides the numeric label next to the slider.
 
-![Slider](images/numeric5.jpg)
+![Slider](../images/numeric5.jpg)
 
 ## Label & Description
 
@@ -115,7 +115,7 @@ def label_description(
 run(label_description)
 ```
 
-![Label & Description](images/numeric6.jpg)
+![Label & Description](../images/numeric6.jpg)
 
 
 ## Optional
@@ -131,7 +131,7 @@ run(optional)
 
 > For full control over the toggle's initial state (`OptionalEnabled` / `OptionalDisabled`), see [Optional Types](optional.md).
 
-![Optional](images/numeric7.jpg)
+![Optional](../images/numeric7.jpg)
 
 ## Dropdown
 
@@ -150,7 +150,7 @@ run(dropdown)
 
 > For dynamic options and Enum dropdowns, see [Dropdowns](dropdown.md).
 
-![Dropdown](images/numeric8.jpg)
+![Dropdown](../images/numeric8.jpg)
 
 ## List
 
@@ -163,6 +163,6 @@ def list_inputs(scores: list[int], weights: list[float]):
 run(list_inputs)
 ```
 
-![List](images/numeric9.jpg)
+![List](../images/numeric9.jpg)
 
 > For list constraints and more, see [Lists](lists.md).
