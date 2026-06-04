@@ -64,11 +64,6 @@ def run(
     if isinstance(app_title, dict):
         raise ValueError(_auth_removed)
 
-    # run() passes the app instance to Uvicorn, and Uvicorn only supports
-    # multiprocess when given an import string ("module:app"). So `workers > 1`
-    # would be silently ignored — the user would think they have N workers but
-    # actually run a single process. Reject it explicitly. workers=1/None are
-    # equivalent to the real behaviour and allowed.
     workers = uvicorn_kwargs.get("workers")
     if workers is not None and workers > 1:
         raise ValueError(
@@ -79,10 +74,16 @@ def run(
             "an import string (e.g. 'uvicorn mymodule:app --workers 4')."
         )
 
+    if uvicorn_kwargs.get("reload"):
+        raise ValueError(
+            "'reload=True' has no effect: run() passes the app instance to "
+            "Uvicorn, whose reloader only runs when serving by import string. "
+            "For auto-reload, wait for create_app() (next release) and serve it "
+            "with an import string (e.g. 'uvicorn mymodule:app --reload')."
+        )
+
     create_pytypeinput_assets()
 
-    # Resolve runtime config as locals (incl. temp-dir defaults) and inject it
-    # downward — no module-level state is mutated.
     uploads_dir = (
         Path(uploads_dir) if uploads_dir is not None
         else Path(tempfile.gettempdir()) / "func_to_web_uploads"
