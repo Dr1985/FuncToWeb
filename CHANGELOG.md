@@ -22,6 +22,9 @@ This release is a big simplification pass. The goal: remove features that can be
   Authentication may return in a future release with a better-thought-out design.
 - **`keep_uploads` parameter** — removed from `run()`. Uploaded files were transient by design and are always cleaned up after the function finishes; persisting them is now done explicitly by moving the file out of `uploads_dir` (e.g. with `shutil.move()`) before returning
 
+### Fixed
+- **`workers` passed to `run()` is now rejected instead of silently ignored** — `run()` hands the app *instance* to Uvicorn, and Uvicorn only spawns multiple workers when given an import string (`"module:app"`). A `workers=N` (N > 1) in `**uvicorn_kwargs` therefore had no effect: callers believed they were running N processes while actually running one. `run(func, workers=2+)` now raises an explicit `ValueError`. **Migration:** `workers=1` (or omitting it) is unchanged; for real multiprocess, wait for `create_app()` (next release) and serve the app by import string with `uvicorn`/`gunicorn` (e.g. `uvicorn mymodule:app --workers 4`).
+
 ## [1.0.2] - 2026-05-02
 
 ### Fixed

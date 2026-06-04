@@ -64,6 +64,21 @@ def run(
     if isinstance(app_title, dict):
         raise ValueError(_auth_removed)
 
+    # run() passes the app instance to Uvicorn, and Uvicorn only supports
+    # multiprocess when given an import string ("module:app"). So `workers > 1`
+    # would be silently ignored — the user would think they have N workers but
+    # actually run a single process. Reject it explicitly. workers=1/None are
+    # equivalent to the real behaviour and allowed.
+    workers = uvicorn_kwargs.get("workers")
+    if workers is not None and workers > 1:
+        raise ValueError(
+            f"'workers={workers}' has no effect: run() starts a single process "
+            "and passes the app instance to Uvicorn, which only runs multiple "
+            "workers when served by import string. For multiprocess, wait for "
+            "create_app() (next release) and serve it with uvicorn/gunicorn via "
+            "an import string (e.g. 'uvicorn mymodule:app --workers 4')."
+        )
+
     create_pytypeinput_assets()
 
     # Resolve runtime config as locals (incl. temp-dir defaults) and inject it
