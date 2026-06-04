@@ -14,7 +14,7 @@ One typed Python function → form + iframe + HTTP endpoint, simultaneously. Thr
 - **Embedded** — drop forms into existing sites via `<iframe>` with URL prefill. "Export to PDF" buttons, CSV importers, modal editors.
 - **Backend for your own SPA** — Drop your built bundle in front_dir= and static files in assets_dir= — served alongside your functions by the same process.
 
-Validation, file uploads, SSE streaming and downloads come wired in. You write the function; routes and forms are not your problem.
+Validation, file uploads, SSE streaming, downloads, custom widgets and outputs via return types and Annotated metadata — all built-in. Auto-generated API docs at /doc for scripts and AI agents: write a function, get a UI and an API for free.
 
 ## Quick start
 
@@ -60,7 +60,7 @@ Open `http://127.0.0.1:8000`. Done.
 | `str`, `int`, `float`, `None` | Text + copy button | [→](docs/outputs.md#text) |
 | `PIL Image`, `Matplotlib Figure` | Inline image | [→](docs/outputs.md#images) |
 | `FileResponse` | Download button | [→](docs/outputs.md#file-downloads) |
-| `DataFrame`, `list[dict]`, ... | Sortable table + CSV | [→](docs/outputs.md#tables) |
+| `DataFrame`, `list[dict]`, ... | Table| [→](docs/outputs.md#tables) |
 | `ActionTable` | Clickable rows → next function | [→](docs/outputs.md#actiontable) |
 | `tuple` / `list` | Multiple outputs | [→](docs/outputs.md#multiple-outputs) |
 | `print()` | Streamed live | [→](docs/outputs.md#print-output) |
