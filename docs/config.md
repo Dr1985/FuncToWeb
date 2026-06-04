@@ -26,8 +26,6 @@ run(my_function, host="127.0.0.1", port=8000)
 | `stream_prints` | `True` | Stream `print()` to browser |
 | `root_path` | `""` | URL prefix for reverse proxy |
 | `fastapi_config` | `None` | Extra FastAPI options |
-| `front_dir` | `None` | Directory mounted at `/front` (with `html=True` for SPA-style routing) |
-| `assets_dir` | `None` | Directory mounted at `/assets` for static files |
 | `**uvicorn_kwargs` | — | Any Uvicorn option |
 
 Any option supported by Uvicorn or FastAPI can be passed through — `fastapi_config` for FastAPI constructor kwargs, and `**uvicorn_kwargs` for everything else.
@@ -66,16 +64,20 @@ picked up per request automatically. Serving by import string also enables
 `uvicorn mymodule:app --workers 4` and `--reload`. Note that the startup
 cleanup of leftover uploads only runs in `run()` — see the changelog.
 
-**Custom frontend + static assets:**
+**Custom frontend / SPA next to your functions:**
 ```python
-run(
-    my_function,
-    front_dir="./my-site",      # served at /front (SPA-style routing)
-    assets_dir="./assets",      # served at /assets (images, fonts, downloads)
-)
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from func_to_web import create_app
+
+host = FastAPI()
+host.mount("/tools", create_app(my_functions))
+host.mount("/", StaticFiles(directory="dist", html=True))
 ```
 
-`front_dir` is mounted with `html=True`, so unknown paths fall back to `index.html` — drop a static site or a built React/Vue/Svelte bundle next to your Python functions and the same FuncToWeb process serves both.
+Your SPA lives at the root, the auto-generated tools under `/tools`, one
+process serves both. `html=True` gives SPA-style routing (unknown paths fall
+back to `index.html`).
 
 ## Nginx + Supervisor
 

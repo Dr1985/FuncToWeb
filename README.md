@@ -13,7 +13,6 @@ One typed Python function → form + iframe + HTTP endpoint, simultaneously. It'
 - **Standalone** — `run(func)`. Internal tools, admin panels, scripts. The auto-generated UI is the app.
 - **Mounted** — `create_app(funcs)` returns a plain FastAPI app. Mount it under any prefix of your existing app; every URL adapts automatically.
 - **Embedded** — drop forms into existing sites via `<iframe>` with URL prefill. "Export to PDF" buttons, CSV importers, modal editors.
-- **Backend for your own SPA** — drop your built bundle in `front_dir=` and static files in `assets_dir=` — served alongside your functions by the same process.
 
 Validation, file uploads, SSE streaming, downloads, custom widgets and outputs via return types and Annotated metadata — all built-in. Auto-generated API docs at /doc for scripts and AI agents: write a function, get a UI and an API for free.
 
@@ -53,7 +52,7 @@ host.mount("/tools", create_app(add))
 uvicorn app:host
 ```
 
-Open `http://127.0.0.1:8000/tools`. Forms, validation, downloads, navigation — everything works under the prefix, zero configuration.
+Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation — everything works under the prefix, zero configuration.
 
 **Full docs with examples and screenshots:** [offerrall.github.io/FuncToWeb](https://offerrall.github.io/FuncToWeb)
 

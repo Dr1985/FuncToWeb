@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.0] - 2026-06-04 (WIP)
+## [1.5.0] - 2026-06-04
 
 This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and expose a cleaner API for building SPAs.
 
@@ -22,8 +22,7 @@ This release is a big simplification pass. The goal: remove features that can be
 
   All internal URLs are derived per request from the ASGI `root_path`, so a
   mounted app works under any prefix with no configuration. `run()` is now a
-  thin wrapper: guards + startup sweeps + `create_app()` + Uvicorn; its public
-  signature and behavior are unchanged.
+  thin wrapper: guards + startup sweeps + `create_app()` + Uvicorn.
 
   Note: the startup sweeps (leftover upload folders, expired returned files)
   run only in `run()`. `create_app()` deliberately skips them — under multiple
@@ -33,26 +32,28 @@ This release is a big simplification pass. The goal: remove features that can be
   at runtime.
 
 ### Changed
-- **Internal CSS/JS bundles are now built in memory and served from routes, not written to a temp dir** — `create_pytypeinput_assets()` (which concatenated pytypeinputweb + `internal_static` assets and wrote `styles.css`/`scripts.js` to `<temp>/func_to_web/static`, mounted at `/static`) is replaced by `build_static_assets()`, which returns the two bundles as strings; they're served by two FastAPI routes captured in a closure. Why: the temp-dir files let two processes (or two installed versions) clobber each other's bundles, and caused `PermissionError` on shared multi-user temp dirs on Linux. Nothing is written to disk anymore. The internal asset URLs changed: `/static/styles.css` → `/_functoweb/static/styles.css` and `/static/scripts.js` → `/_functoweb/static/scripts.js` (internal URLs; `/front` and `/assets` are unaffected).
+- **Internal CSS/JS bundles are now built in memory and served from routes, not written to a temp dir** — `create_pytypeinput_assets()` (which concatenated pytypeinputweb + `internal_static` assets and wrote `styles.css`/`scripts.js` to `<temp>/func_to_web/static`, mounted at `/static`) is replaced by `build_static_assets()`, which returns the two bundles as strings; they're served by two FastAPI routes captured in a closure. Why: the temp-dir files let two processes (or two installed versions) clobber each other's bundles, and caused `PermissionError` on shared multi-user temp dirs on Linux. Nothing is written to disk anymore. The internal asset URLs changed: `/static/styles.css` → `/_functoweb/static/styles.css` and `/static/scripts.js` → `/_functoweb/static/scripts.js` (internal URLs).
 - **Returned-file cleanup is now opportunistic instead of timer-based** — the per-process background daemon thread (`start_cleanup_timer`) that swept `returns_dir` every `returns_lifetime` seconds has been removed. Cleanup now runs lazily on activity — when a file is saved (`FileResponse`) or downloaded — throttled by a `.last_cleanup` marker file so it does real work at most once per `returns_lifetime` window. Why: under the upcoming multi-process `create_app()` deployments, N workers would have spawned N redundant threads sweeping the same directory (and a library spawning daemon threads is undesirable in general); the marker approach is multi-process safe by being harmless (no locks — duplicate deletes are ignored). Observable contract change: expired files are now deleted on the next save/download after expiry rather than on a fixed timer; the boot-time cleanup in `run()` still applies. `returns_lifetime` keeps the same meaning.
 - **Internals are now free of module-level config state** — the upload/return directories, size limit and `stream_prints` flag are no longer mutated onto module globals (`save_file_handler.UPLOADS_DIR`, etc.); `run()` resolves them as locals and passes them down explicitly through closures. Public behaviour is unchanged, but anyone who used to monkey-patch `save_file_handler.UPLOADS_DIR` (or the other module globals) must pass the corresponding `run()` keyword instead.
 - **Default uploads and returned-files directories moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` and `returns_dir` to `<os-temp-dir>/func_to_web_returned_files` (resolved via `tempfile.gettempdir()`), instead of `./uploads` and `./returned_files` in the current working directory; transient files no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` / `returns_dir=...` to keep the previous behaviour
 
 ### Removed
-- **Built-in authentication (`auth` and `secret_key`)** — the session-based login that `run()` shipped with has been removed. The implementation was deliberately minimal, and instead of maintaining it long-term we'd rather redesign auth properly before committing to an API. It also clashed with the new 1.5.0 SPA mode: with the user's frontend served at `/` and excluded from the auth middleware, it was confusing and inconsistent which routes were actually protected and which weren't. Because dropping auth is a security-relevant breaking change, `run()` actively rejects the old parameters: passing `auth=` or `secret_key=` (or the old positional `auth` dict, which would otherwise land in `app_title`) raises an explicit `ValueError`, so nobody can upgrade and silently end up with an exposed panel. **Migration:** protect your app with a reverse proxy that handles auth, e.g. Nginx `auth_basic`:
-  ```nginx
-  location / {
-      auth_basic           "Restricted";
-      auth_basic_user_file /etc/nginx/.htpasswd;
-      proxy_pass           http://127.0.0.1:8000;
-  }
+- Authentication (`auth`/`secret_key`). No compatibility shims remain: passing
+  them now fails with a plain `TypeError`/Uvicorn error. Protect your app with
+  a reverse proxy that handles auth (e.g. Nginx basic auth).
+- `front_dir` / `assets_dir` from `run()`. Superseded by composition: mount
+  your static site next to the tools with Starlette's `StaticFiles`:
+
+  ```python
+  host = FastAPI()
+  host.mount("/tools", create_app(funcs))
+  host.mount("/", StaticFiles(directory="dist", html=True))
   ```
-  Authentication may return in a future release with a better-thought-out design.
 - **`keep_uploads` parameter** — removed from `run()`. Uploaded files were transient by design and are always cleaned up after the function finishes; persisting them is now done explicitly by moving the file out of `uploads_dir` (e.g. with `shutil.move()`) before returning
 
 ### Fixed
-- **Internal URLs are now prefix-aware (work under a `root_path` / when mounted)** — the HTML/JS emitted absolute, root-anchored URLs (`/submit`, `/download/<id>`, `/_functoweb/static/...`, navigation/index links, and `ActionTable` redirects). Behind a reverse proxy with a real `root_path`, or under `app.mount("/tools", ...)`, those pointed at the domain root and broke styling, form submit, navigation, downloads and `ActionTable`. URLs are now derived per request from `request.scope["root_path"]` and prepended to internal paths (templates receive a `prefix`; the frontend reads `window.__functoweb_prefix`). The SSE payload is unchanged (`action` stays `/{slug}`), as is `/doc`, the API contract and `run()`'s public signature. This also paves the way for the upcoming mountable `create_app()`.
-- **`workers` and `reload` passed to `run()` are now rejected instead of silently ignored** — `run()` hands the app *instance* to Uvicorn, and Uvicorn only spawns multiple workers, or runs its reload supervisor, when given an import string (`"module:app"`). A `workers=N` (N > 1) or `reload=True` in `**uvicorn_kwargs` therefore had no effect: callers believed they had N processes / auto-reload while actually running a single, non-reloading process. `run(func, workers=2+)` and `run(func, reload=True)` now raise an explicit `ValueError`. **Migration:** `workers=1` (or omitting it) is unchanged; for real multiprocess or auto-reload, wait for `create_app()` (next release) and serve the app by import string with `uvicorn`/`gunicorn` (e.g. `uvicorn mymodule:app --workers 4 --reload`).
+- **Internal URLs are now prefix-aware (work under a `root_path` / when mounted)** — the HTML/JS emitted absolute, root-anchored URLs (`/submit`, `/download/<id>`, `/_functoweb/static/...`, navigation/index links, and `ActionTable` redirects). Behind a reverse proxy with a real `root_path`, or under `app.mount("/tools", ...)`, those pointed at the domain root and broke styling, form submit, navigation, downloads and `ActionTable`. URLs are now derived per request from `request.scope["root_path"]` and prepended to internal paths (templates receive a `prefix`; the frontend reads `window.__functoweb_prefix`). The SSE payload is unchanged (`action` stays `/{slug}`), as is `/doc`, the API contract and `run()`'s public signature. This also paves the way for the mountable `create_app()` added in this release.
+- **`workers` and `reload` passed to `run()` are now rejected instead of silently ignored** — `run()` hands the app *instance* to Uvicorn, and Uvicorn only spawns multiple workers, or runs its reload supervisor, when given an import string (`"module:app"`). A `workers=N` (N > 1) or `reload=True` in `**uvicorn_kwargs` therefore had no effect: callers believed they had N processes / auto-reload while actually running a single, non-reloading process. `run(func, workers=2+)` and `run(func, reload=True)` now raise an explicit `ValueError`. **Migration:** `workers=1` (or omitting it) is unchanged; for real multiprocess or auto-reload, build the app with `create_app()` (added in this release) and serve it by import string with `uvicorn`/`gunicorn` (e.g. `uvicorn mymodule:app --workers 4 --reload`).
 
 ## [1.0.2] - 2026-05-02
 

@@ -1,12 +1,23 @@
-from func_to_web import run
+"""Serve a static site / SPA next to your functions.
 
-def search_users(q: str) -> list[dict]:
-    """Called from a custom HTML/JS frontend via fetch()."""
-    return [{"id": i, "name": f"{q}_{i}"} for i in range(5)]
+The SPA lives at the root, the auto-generated tools under /tools,
+one process serves both.
+"""
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+import uvicorn
 
-# Drop your own index.html into ./site and your assets into ./assets
-run(
-    search_users,
-    front_dir="./site",
-    assets_dir="./assets",
-)
+from func_to_web import create_app
+
+
+def greet(name: str):
+    return f"Hello, {name}!"
+
+
+app = FastAPI()
+app.mount("/tools", create_app(greet))
+app.mount("/", StaticFiles(directory="./site", html=True))
+
+# Or by import string: uvicorn 04_static_frontend:app --reload
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)

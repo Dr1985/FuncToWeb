@@ -49,7 +49,7 @@ class HiddenFunction(FunctionMetadata):
 
 @dataclass
 class NormalizedInput:
-    """Normalized internal input for `run()`.
+    """Normalized internal input for `run()` / `create_app()`.
 
     Exactly one of `single_function` or `items` must be set.
     `navigation_data` is always derived.
