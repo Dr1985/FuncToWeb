@@ -68,7 +68,6 @@ nav:
       - Output Types: outputs.md
   - Features:
       - Configuration: config.md
-      - Authentication: auth.md
       - Multiple functions: multiple.md
       - Prefill values: url_prefill.md
       - AutoDoc for IA: api_doc.md

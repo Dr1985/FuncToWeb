@@ -11,4 +11,6 @@ def restart_service(service: Literal["nginx", "gunicorn", "celery"]):
     )
     return f"{service}: {result.stdout or result.stderr}"
 
-run(restart_service, auth={"admin": "change_me"})
+# Sensitive admin tools like this should be deployed behind a reverse proxy
+# with authentication (e.g. Nginx basic auth) — see docs/config.md.
+run(restart_service)

@@ -71,7 +71,6 @@ Open `http://127.0.0.1:8000`. Done.
 - **URL prefill** — open forms with values from query params — [docs](docs/url_prefill.md)
 - **Embed mode** — drop any form into your site via `?__embed=1` — [docs](docs/embed.md)
 - **Auto-generated API docs** at `/doc` for scripts and AI agents — [docs](docs/api_doc.md)
-- **Authentication** with username/password — [docs](docs/auth.md)
 - **Dark mode** — [docs](docs/dark_mode.md)
 - **Server config** — host, port, reverse proxy — [docs](docs/config.md)
 
@@ -105,7 +104,7 @@ def make_qr(text: str):
 run(make_qr)
 ```
 
-**Protected admin panel**
+**Admin panel**
 
 ```python
 import subprocess
@@ -116,7 +115,9 @@ def restart_service(service: Literal['nginx', 'gunicorn', 'celery']):
     subprocess.run(["sudo", "supervisorctl", "restart", service], check=True)
     return f"{service} restarted."
 
-run(restart_service, auth={"admin": "your_password"})
+# Deploy sensitive tools behind a reverse proxy with auth (e.g. Nginx
+# basic auth) — see docs/config.md.
+run(restart_service)
 ```
 
 More in [`examples/`](examples/) — including a full [CRUD app in 70 lines](examples/14_recipes/07_simple_crud.py) using `Params` + `ActionTable`.

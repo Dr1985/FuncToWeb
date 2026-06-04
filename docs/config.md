@@ -16,8 +16,6 @@ run(my_function, host="127.0.0.1", port=8000)
 |-----------|---------|-------------|
 | `host` | `"0.0.0.0"` | Server host |
 | `port` | `8000` | Server port |
-| `auth` | `None` | `{username: password}` dict |
-| `secret_key` | auto | Session signing key |
 | `app_title` | auto | Page title |
 | `css_vars` | `None` | CSS variable overrides |
 | `favicon` | `None` | Path to favicon file |
@@ -62,11 +60,21 @@ run(
 
 `front_dir` is mounted with `html=True`, so unknown paths fall back to `index.html` — drop a static site or a built React/Vue/Svelte bundle next to your Python functions and the same FuncToWeb process serves both.
 
-Both directories are excluded from the auth middleware, so static content is reachable without login.
-
 ## Nginx + Supervisor
 
 The recommended setup: Supervisor keeps the process alive, Nginx handles SSL termination and proxies to FuncToWeb on localhost. Set `root_path` to match the Nginx location, and disable proxy buffering if you use `stream_prints=True`.
+
+### Protecting the app
+
+FuncToWeb has no built-in authentication. To restrict access, put it behind a reverse proxy with auth. With Nginx, `auth_basic` is the simplest option:
+
+```nginx
+location / {
+    auth_basic           "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;   # created with `htpasswd`
+    proxy_pass           http://127.0.0.1:8000;
+}
+```
 
 ## Production Example
 
@@ -78,7 +86,5 @@ run(
     my_functions,
     host="127.0.0.1",
     port=8000,
-    auth={"admin": os.environ["ADMIN_PASSWORD"]},
-    secret_key=os.environ["SECRET_KEY"],
 )
 ```

@@ -10,6 +10,15 @@ This release is a big simplification pass. The goal: remove features that can be
 - **Default uploads and returned-files directories moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` and `returns_dir` to `<os-temp-dir>/func_to_web_returned_files` (resolved via `tempfile.gettempdir()`), instead of `./uploads` and `./returned_files` in the current working directory; transient files no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` / `returns_dir=...` to keep the previous behaviour
 
 ### Removed
+- **Built-in authentication (`auth` and `secret_key`)** — the session-based login that `run()` shipped with has been removed. The implementation was deliberately minimal, and instead of maintaining it long-term we'd rather redesign auth properly before committing to an API. It also clashed with the new 1.5.0 SPA mode: with the user's frontend served at `/` and excluded from the auth middleware, it was confusing and inconsistent which routes were actually protected and which weren't. Because dropping auth is a security-relevant breaking change, `run()` actively rejects the old parameters: passing `auth=` or `secret_key=` (or the old positional `auth` dict, which would otherwise land in `app_title`) raises an explicit `ValueError`, so nobody can upgrade and silently end up with an exposed panel. **Migration:** protect your app with a reverse proxy that handles auth, e.g. Nginx `auth_basic`:
+  ```nginx
+  location / {
+      auth_basic           "Restricted";
+      auth_basic_user_file /etc/nginx/.htpasswd;
+      proxy_pass           http://127.0.0.1:8000;
+  }
+  ```
+  Authentication may return in a future release with a better-thought-out design.
 - **`keep_uploads` parameter** — removed from `run()`. Uploaded files were transient by design and are always cleaned up after the function finishes; persisting them is now done explicitly by moving the file out of `uploads_dir` (e.g. with `shutil.move()`) before returning
 
 ## [1.0.2] - 2026-05-02
