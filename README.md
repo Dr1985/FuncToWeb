@@ -51,7 +51,7 @@ Open `http://127.0.0.1:8000`. Done.
 | `list[T]` | Dynamic list | [→](docs/lists.md) |
 | `T \| None` | Toggle + input | [→](docs/optional.md) |
 | `Params` | Reusable groups | [→](docs/params.md) |
-| `Annotated[T, ...]` | Constraints, labels, sliders | [→](docs/composition.md) |
+| `Annotated[T, ...]` | Type Composition, Constraints, labels, sliders | [→](docs/composition.md) |
 
 ## Outputs
 
