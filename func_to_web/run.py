@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from typing import Any, Callable
 
@@ -21,7 +22,7 @@ def run(
     app_title: str | None = None,
     css_vars: dict[str, str] | None = None,
     favicon: str | Path | None = None,
-    uploads_dir: str | Path = "./uploads",
+    uploads_dir: str | Path | None = None,
     max_file_size: int | None = None,
     keep_uploads: bool = False,
     returns_dir: str | Path = "./returned_files",
@@ -44,7 +45,8 @@ def run(
         app_title: Custom application title.
         css_vars: CSS variable overrides.
         favicon: Path to favicon file.
-        uploads_dir: Directory for uploaded files.
+        uploads_dir: Directory for uploaded files. Defaults to a
+            "func_to_web_uploads" folder inside the OS temp dir.
         max_file_size: Maximum size in bytes for uploaded files, None for unlimited.
         keep_uploads: If True, uploaded files are not deleted after function execution.
         returns_dir: Directory for files returned by functions.
@@ -59,6 +61,8 @@ def run(
     print_beta_warning()
     create_pytypeinput_assets()
 
+    if uploads_dir is None:
+        uploads_dir = Path(tempfile.gettempdir()) / "func_to_web_uploads"
     save_file_handler.UPLOADS_DIR = Path(uploads_dir)
     save_file_handler.MAX_FILE_SIZE = max_file_size
     save_file_handler.KEEP_UPLOADS = keep_uploads

@@ -1,3 +1,4 @@
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Any
@@ -6,7 +7,7 @@ import aiofiles
 
 CHUNK_SIZE = 8 * 1024 * 1024
 
-UPLOADS_DIR = Path("./uploads")
+UPLOADS_DIR = Path(tempfile.gettempdir()) / "func_to_web_uploads"
 MAX_FILE_SIZE: int | None = None
 KEEP_UPLOADS: bool = False
 
