@@ -29,16 +29,21 @@ def render_page(
     params: list[ParamMetadata],
     meta: FunctionMetadata,
     app_input: NormalizedInput,
-    base_url: str = ""
+    base_url: str = "",
+    prefix: str = ""
 ) -> str:
-    """Render a function page (form + layout)."""
+    """Render a function page (form + layout).
+
+    `prefix` is the per-request root_path ("" at root, "/tools" when mounted or
+    behind a proxy); it is prepended to internal absolute URLs.
+    """
     # Frontend builds the form from serialized param metadata
     params_json = json.dumps([p.to_dict() for p in params])
 
     form_html = _jinja_env.get_template("form.html").render(
         title=meta.name,
         description=meta.description,
-        action=f"{base_url}/submit",
+        action=f"{prefix}{base_url}/submit",
         params_json=params_json,
     )
 
@@ -53,15 +58,20 @@ def render_page(
         css_vars=app_input.css_vars,
         favicon=app_input.favicon_data_uri,
         navigation_data=navigation_data,
+        prefix=prefix,
     )
 
 
-def render_index(app_input: NormalizedInput) -> str:
-    """Render the index page (multi-function mode)."""
+def render_index(app_input: NormalizedInput, prefix: str = "") -> str:
+    """Render the index page (multi-function mode).
+
+    `prefix` is the per-request root_path, prepended to internal absolute URLs.
+    """
     return _jinja_env.get_template("index.html").render(
         page_title=app_input.title,
         items=app_input.navigation_data,
         css_vars=app_input.css_vars,
         favicon=app_input.favicon_data_uri,
         navigation_data=app_input.navigation_data,
+        prefix=prefix,
     )

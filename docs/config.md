@@ -49,6 +49,8 @@ run(my_function, port=5000)
 run(my_function, root_path="/tools/my-app")
 ```
 
+Set `root_path` to the prefix your proxy serves under and the whole UI works: every internal URL (styles/scripts, form submit, navigation, downloads, `ActionTable`) is derived per request from `root_path`, so nothing points at the domain root. A trailing slash is fine — it's normalized. (Mounting a FuncToWeb app inside a larger app via `create_app()` is coming next.)
+
 **Custom frontend + static assets:**
 ```python
 run(

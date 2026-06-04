@@ -1,9 +1,9 @@
 import re
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse as FastAPIFileResponse, JSONResponse
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from .builder import render_index
 from .models import FunctionMetadata, NormalizedInput
@@ -85,11 +85,11 @@ def setup_multi_items(
     visible = [item for item in app_input.navigation_data if item["type"] == "function" and not item.get("hidden")]
 
     @app.get("/", response_class=HTMLResponse)
-    async def index():
+    async def index(request: Request):
+        prefix = request.scope.get("root_path", "")
         if len(visible) == 1:
-            from fastapi.responses import RedirectResponse
-            return RedirectResponse(url=visible[0]["url"])
-        return render_index(app_input)
+            return RedirectResponse(url=f"{prefix}{visible[0]['url']}")
+        return render_index(app_input, prefix=prefix)
 
     register_navigation_routes(
         app, app_input.navigation_data, app_input,

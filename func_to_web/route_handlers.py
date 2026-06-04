@@ -116,10 +116,11 @@ def create_handlers(
         for i in range(len(params)):
             params[i] = params[i].refresh_choices()
 
-    async def page_handler():
+    async def page_handler(request: Request):
         """Render the function page."""
         refresh_params()
-        return render_page(params, meta, app_input, base_url=base_url)
+        prefix = request.scope.get("root_path", "")
+        return render_page(params, meta, app_input, base_url=base_url, prefix=prefix)
 
     async def submit_handler(request: Request):
         """Validate input, save files, and execute the function."""

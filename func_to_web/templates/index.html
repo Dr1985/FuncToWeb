@@ -15,10 +15,11 @@
 </div>
 {% endblock %}
 
+{# macros read `prefix` from the render context — switching to {% import %} without `with context` would silently break it #}
 {% macro render_item(item) %}
     {% if item.type == 'function' %}
         {% if not item.hidden %}
-        <a href="{{ item.url }}" class="functoweb-function-card">
+        <a href="{{ prefix }}{{ item.url }}" class="functoweb-function-card">
             <h3 class="functoweb-function-card-title">{{ item.name }}</h3>
             {% if item.description %}
             <p class="functoweb-function-card-description">{{ item.description }}</p>

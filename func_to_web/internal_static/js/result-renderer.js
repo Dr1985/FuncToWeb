@@ -1,4 +1,7 @@
 (function() {
+    // Per-request root_path prefix injected by base.html ("" at root, "/tools" mounted).
+    const PREFIX = window.__functoweb_prefix || "";
+
     const COPY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
     const CHECK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     const EXPAND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
@@ -131,7 +134,7 @@
             if (new URLSearchParams(location.search).get('__embed') === '1') {
                 params.set('__embed', '1');
             }
-            window.location.href = `${action}?${params}`;
+            window.location.href = `${PREFIX}${action}?${params}`;
         });
 
         table.appendChild(tbody);
@@ -393,7 +396,7 @@
 
             const btn = document.createElement("a");
             btn.className = "functoweb-download-btn";
-            btn.href = `/download/${payload.file_id}`;
+            btn.href = `${PREFIX}/download/${payload.file_id}`;
             btn.download = payload.filename;
             btn.innerHTML = `${DOWNLOAD_SVG} ${payload.filename}`;
 
@@ -410,7 +413,7 @@
             for (const f of files) {
                 const btn = document.createElement("a");
                 btn.className = "functoweb-download-btn";
-                btn.href = `/download/${f.file_id}`;
+                btn.href = `${PREFIX}/download/${f.file_id}`;
                 btn.download = f.filename;
                 btn.innerHTML = `${DOWNLOAD_SVG} ${f.filename}`;
                 body.appendChild(btn);

@@ -84,6 +84,11 @@ def run(
 
     static_css, static_js = build_static_assets()
 
+    # Normalize root_path once: a trailing slash (e.g. root_path="/tools/") would
+    # produce doubled-slash internal URLs like "/tools//add". ASGI convention is
+    # no trailing slash; enforce it here so the handlers don't each have to.
+    root_path = root_path.rstrip("/")
+
     uploads_dir = (
         Path(uploads_dir) if uploads_dir is not None
         else Path(tempfile.gettempdir()) / "func_to_web_uploads"

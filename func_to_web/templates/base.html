@@ -8,7 +8,7 @@
     <link rel="icon" href="{{ favicon }}" type="image/x-icon">
     {% endif %}
     
-    <link rel="stylesheet" href="/_functoweb/static/styles.css">
+    <link rel="stylesheet" href="{{ prefix }}/_functoweb/static/styles.css">
     {% if css_vars %}
     <style>
         {% raw %}:root {{% endraw %}
@@ -31,7 +31,8 @@
     
     {% block content %}{% endblock %}
     
-    <script src="/_functoweb/static/scripts.js"></script>
+    <script>window.__functoweb_prefix = {{ prefix | tojson }};</script>
+    <script src="{{ prefix }}/_functoweb/static/scripts.js"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
