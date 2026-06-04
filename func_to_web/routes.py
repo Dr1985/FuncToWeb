@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse as FastAPIFileResponse, JSONResponse
@@ -19,10 +20,19 @@ def register_function_routes(
     app: FastAPI,
     meta: FunctionMetadata,
     app_input: NormalizedInput,
-    url: str
+    url: str,
+    *,
+    uploads_dir: Path,
+    max_file_size: int | None,
+    returns_dir: Path,
+    stream_prints: bool,
 ) -> None:
     """Register routes for a single function."""
-    page_handler, submit_handler = create_handlers(meta, app_input, base_url=url)
+    page_handler, submit_handler = create_handlers(
+        meta, app_input, base_url=url,
+        uploads_dir=uploads_dir, max_file_size=max_file_size,
+        returns_dir=returns_dir, stream_prints=stream_prints,
+    )
 
     app.get(url, response_class=HTMLResponse)(page_handler)
     app.post(f"{url}/submit")(submit_handler)
@@ -31,7 +41,12 @@ def register_function_routes(
 def register_navigation_routes(
     app: FastAPI,
     nav_items: list,
-    app_input: NormalizedInput
+    app_input: NormalizedInput,
+    *,
+    uploads_dir: Path,
+    max_file_size: int | None,
+    returns_dir: Path,
+    stream_prints: bool,
 ) -> None:
     """Recursively register routes for all navigation items."""
     # Resolve all functions once, then match them by slug.
@@ -41,12 +56,28 @@ def register_navigation_routes(
         if item["type"] == "function":
             meta = next((m for m in all_functions if m.slug == item["slug"]), None)
             if meta:
-                register_function_routes(app, meta, app_input, item["url"])
+                register_function_routes(
+                    app, meta, app_input, item["url"],
+                    uploads_dir=uploads_dir, max_file_size=max_file_size,
+                    returns_dir=returns_dir, stream_prints=stream_prints,
+                )
         else:
-            register_navigation_routes(app, item["children"], app_input)
+            register_navigation_routes(
+                app, item["children"], app_input,
+                uploads_dir=uploads_dir, max_file_size=max_file_size,
+                returns_dir=returns_dir, stream_prints=stream_prints,
+            )
 
 
-def setup_multi_items(app: FastAPI, app_input: NormalizedInput) -> None:
+def setup_multi_items(
+    app: FastAPI,
+    app_input: NormalizedInput,
+    *,
+    uploads_dir: Path,
+    max_file_size: int | None,
+    returns_dir: Path,
+    stream_prints: bool,
+) -> None:
 
     visible = [item for item in app_input.navigation_data if item["type"] == "function" and not item.get("hidden")]
 
@@ -57,20 +88,36 @@ def setup_multi_items(app: FastAPI, app_input: NormalizedInput) -> None:
             return RedirectResponse(url=visible[0]["url"])
         return render_index(app_input)
 
-    register_navigation_routes(app, app_input.navigation_data, app_input)
+    register_navigation_routes(
+        app, app_input.navigation_data, app_input,
+        uploads_dir=uploads_dir, max_file_size=max_file_size,
+        returns_dir=returns_dir, stream_prints=stream_prints,
+    )
 
 
-def setup_single_function(app: FastAPI, app_input: NormalizedInput) -> None:
+def setup_single_function(
+    app: FastAPI,
+    app_input: NormalizedInput,
+    *,
+    uploads_dir: Path,
+    max_file_size: int | None,
+    returns_dir: Path,
+    stream_prints: bool,
+) -> None:
     """Set up routes for single-function mode."""
     meta = app_input.single_function
 
-    page_handler, submit_handler = create_handlers(meta, app_input, base_url="")
+    page_handler, submit_handler = create_handlers(
+        meta, app_input, base_url="",
+        uploads_dir=uploads_dir, max_file_size=max_file_size,
+        returns_dir=returns_dir, stream_prints=stream_prints,
+    )
 
     app.get("/", response_class=HTMLResponse)(page_handler)
     app.post("/submit")(submit_handler)
 
 
-def setup_download_route(app: FastAPI) -> None:
+def setup_download_route(app: FastAPI, returns_dir: Path) -> None:
     """Register the file download route."""
 
     @app.get("/download/{file_id}")
@@ -79,7 +126,7 @@ def setup_download_route(app: FastAPI) -> None:
         if not UUID_PATTERN.match(file_id):
             return JSONResponse({"error": "Invalid file ID"}, status_code=400)
 
-        file_info = get_returned_file(file_id)
+        file_info = get_returned_file(file_id, returns_dir)
         if not file_info:
             return JSONResponse({"error": "File not found or expired"}, status_code=404)
 

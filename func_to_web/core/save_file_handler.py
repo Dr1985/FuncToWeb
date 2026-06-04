@@ -1,4 +1,3 @@
-import tempfile
 import uuid
 from pathlib import Path
 from typing import Any
@@ -7,17 +6,18 @@ import aiofiles
 
 CHUNK_SIZE = 8 * 1024 * 1024
 
-UPLOADS_DIR = Path(tempfile.gettempdir()) / "func_to_web_uploads"
-MAX_FILE_SIZE: int | None = None
 
-
-async def save_uploaded_file(uploaded_file: Any) -> str:
+async def save_uploaded_file(
+    uploaded_file: Any,
+    uploads_dir: Path,
+    max_file_size: int | None = None,
+) -> str:
     """Save uploaded file with optional size limit."""
     original_name = getattr(uploaded_file, 'filename', None) or 'file'
     if not original_name.strip():
         original_name = 'file'
 
-    folder_path = UPLOADS_DIR / uuid.uuid4().hex
+    folder_path = uploads_dir / uuid.uuid4().hex
     folder_path.mkdir(parents=True, exist_ok=True)
     file_path = folder_path / original_name
 
@@ -28,10 +28,10 @@ async def save_uploaded_file(uploaded_file: Any) -> str:
             while chunk := await uploaded_file.read(CHUNK_SIZE):
                 bytes_written += len(chunk)
 
-                if MAX_FILE_SIZE is not None and bytes_written > MAX_FILE_SIZE:
+                if max_file_size is not None and bytes_written > max_file_size:
                     raise ValueError(
                         f"File too large: {bytes_written / (1024*1024):.1f} MB "
-                        f"(max: {MAX_FILE_SIZE / (1024*1024):.1f} MB)"
+                        f"(max: {max_file_size / (1024*1024):.1f} MB)"
                     )
 
                 await f.write(chunk)
@@ -47,23 +47,27 @@ def cleanup_uploaded_file(file_path: str) -> None:
     _remove_folder(Path(file_path).parent)
 
 
-def cleanup_uploads_dir() -> int:
+def cleanup_uploads_dir(uploads_dir: Path) -> int:
     """Remove all folders in uploads dir. Run once at startup."""
-    if not UPLOADS_DIR.exists():
+    if not uploads_dir.exists():
         return 0
 
     count = 0
-    for folder in UPLOADS_DIR.iterdir():
+    for folder in uploads_dir.iterdir():
         if folder.is_dir():
-            _remove_folder(folder)
+            _remove_folder(folder, root=uploads_dir)
             count += 1
 
     return count
 
 
-def _remove_folder(folder_path: Path) -> None:
-    """Remove a folder and all its contents."""
-    if not folder_path.exists() or folder_path == UPLOADS_DIR:
+def _remove_folder(folder_path: Path, root: Path | None = None) -> None:
+    """Remove a folder and all its contents.
+
+    `root` is a safety guard: if `folder_path` equals it, nothing is removed
+    (prevents deleting the uploads root itself).
+    """
+    if not folder_path.exists() or folder_path == root:
         return
 
     try:

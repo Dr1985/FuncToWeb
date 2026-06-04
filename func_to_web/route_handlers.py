@@ -1,5 +1,6 @@
 import json
 import inspect
+from pathlib import Path
 from typing import get_type_hints
 
 from fastapi import Request
@@ -93,9 +94,18 @@ def validate_submit(
 def create_handlers(
     meta: FunctionMetadata,
     app_input: NormalizedInput,
-    base_url: str
+    base_url: str,
+    uploads_dir: Path,
+    max_file_size: int | None,
+    returns_dir: Path,
+    stream_prints: bool,
 ) -> tuple:
-    """Create the page and submit handlers for a function."""
+    """Create the page and submit handlers for a function.
+
+    The runtime config (`uploads_dir`, `max_file_size`, `returns_dir`,
+    `stream_prints`) is captured by the `page_handler`/`submit_handler` closures,
+    the same way `meta` and `base_url` already are.
+    """
     # Analyze once; Params subclasses are expanded into individual fields.
     params, params_map = _analyze(meta.function)
 
@@ -171,7 +181,7 @@ def create_handlers(
                 paths = []
                 try:
                     for upload_file in file_list:
-                        path = await save_uploaded_file(upload_file)
+                        path = await save_uploaded_file(upload_file, uploads_dir, max_file_size)
                         saved_paths.append(path)
                         paths.append(path)
                 except ValueError as e:
@@ -197,7 +207,9 @@ def create_handlers(
                         "errors": {param_name: str(e)},
                     }, status_code=422)
 
-            return await call_function(meta, validated, saved_paths)
+            return await call_function(
+                meta, validated, saved_paths, returns_dir, stream_prints
+            )
 
         except Exception as e:
             for p in saved_paths:

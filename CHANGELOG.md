@@ -7,6 +7,7 @@ This release is a big simplification pass. The goal: remove features that can be
 1.5.0 is the update that takes FuncToWeb from "tool for spinning up mini programs" to "backend for SPA web apps" — without losing anything from its original mode. FuncToWeb is still the same as day one, just more powerful: the auto-generated form UI, single/multi function apps, and everything you already use keep working exactly as before.
 
 ### Changed
+- **Internals are now free of module-level config state** — the upload/return directories, size limit and `stream_prints` flag are no longer mutated onto module globals (`save_file_handler.UPLOADS_DIR`, etc.); `run()` resolves them as locals and passes them down explicitly through closures. Public behaviour is unchanged, but anyone who used to monkey-patch `save_file_handler.UPLOADS_DIR` (or the other module globals) must pass the corresponding `run()` keyword instead.
 - **Default uploads and returned-files directories moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` and `returns_dir` to `<os-temp-dir>/func_to_web_returned_files` (resolved via `tempfile.gettempdir()`), instead of `./uploads` and `./returned_files` in the current working directory; transient files no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` / `returns_dir=...` to keep the previous behaviour
 
 ### Removed

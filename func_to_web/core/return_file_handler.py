@@ -1,12 +1,7 @@
-import os
 import time
 import uuid
-import tempfile
 import threading
 from pathlib import Path
-
-RETURNS_DIR = Path(tempfile.gettempdir()) / "func_to_web_returned_files"
-RETURNS_LIFETIME_SECONDS: int = 3600
 
 
 def _encode_filename(file_id: str, timestamp: int, filename: str) -> str:
@@ -24,7 +19,7 @@ def _decode_filename(name: str) -> dict | None:
         return None
 
 
-def save_returned_file(file_response) -> tuple[str, str]:
+def save_returned_file(file_response, returns_dir: Path) -> tuple[str, str]:
     """Save a FileResponse to disk.
 
     Returns:
@@ -38,24 +33,24 @@ def save_returned_file(file_response) -> tuple[str, str]:
     file_id = uuid.uuid4().hex
     timestamp = int(time.time())
     encoded = _encode_filename(file_id, timestamp, file_response.filename)
-    file_path = RETURNS_DIR / encoded
+    file_path = returns_dir / encoded
 
-    RETURNS_DIR.mkdir(parents=True, exist_ok=True)
+    returns_dir.mkdir(parents=True, exist_ok=True)
     file_path.write_bytes(data)
 
     return file_id, str(file_path)
 
 
-def get_returned_file(file_id: str) -> dict | None:
+def get_returned_file(file_id: str, returns_dir: Path) -> dict | None:
     """Find a returned file by file_id.
 
     Returns:
         {"path": str, "filename": str} or None if not found.
     """
-    if not RETURNS_DIR.exists():
+    if not returns_dir.exists():
         return None
 
-    for p in RETURNS_DIR.iterdir():
+    for p in returns_dir.iterdir():
         if not p.is_file():
             continue
         meta = _decode_filename(p.name)
@@ -65,23 +60,23 @@ def get_returned_file(file_id: str) -> dict | None:
     return None
 
 
-def cleanup_returned_files() -> int:
-    """Delete returned files older than RETURNS_LIFETIME_SECONDS.
+def cleanup_returned_files(returns_dir: Path, returns_lifetime: int) -> int:
+    """Delete returned files older than `returns_lifetime` seconds.
 
     Returns:
         Number of files deleted.
     """
-    if not RETURNS_DIR.exists():
+    if not returns_dir.exists():
         return 0
 
     now = int(time.time())
     count = 0
 
-    for p in RETURNS_DIR.iterdir():
+    for p in returns_dir.iterdir():
         if not p.is_file():
             continue
         meta = _decode_filename(p.name)
-        if meta and (now - meta["timestamp"]) > RETURNS_LIFETIME_SECONDS:
+        if meta and (now - meta["timestamp"]) > returns_lifetime:
             try:
                 p.unlink()
                 count += 1
@@ -92,17 +87,17 @@ def cleanup_returned_files() -> int:
     return count
 
 
-def start_cleanup_timer() -> None:
+def start_cleanup_timer(returns_dir: Path, returns_lifetime: int) -> None:
     """Start a background thread that cleans up expired returned files every hour.
-    
+
     Safe to call multiple times — only starts one thread per process.
     The thread is a daemon so it dies automatically when the process exits.
     """
     def _loop():
         while True:
-            time.sleep(RETURNS_LIFETIME_SECONDS)
+            time.sleep(returns_lifetime)
             try:
-                cleanup_returned_files()
+                cleanup_returned_files(returns_dir, returns_lifetime)
             except Exception:
                 pass
 

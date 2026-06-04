@@ -1,16 +1,13 @@
 import inspect
 import asyncio
 import json
+from pathlib import Path
 
 from fastapi.responses import StreamingResponse
 from .models import FunctionMetadata
 from .core.save_file_handler import cleanup_uploaded_file
 from .core.print_capture import PrintCapture
 from .process_result import process_result, process_error
-
-
-# Can be disabled via run(stream_prints=False).
-STREAM_PRINTS = True
 
 
 def _run_sync_with_capture(func, cap: PrintCapture, kwargs: dict):
@@ -22,7 +19,9 @@ def _run_sync_with_capture(func, cap: PrintCapture, kwargs: dict):
 async def call_function(
     meta: FunctionMetadata,
     validated: dict,
-    saved_paths: list[str]
+    saved_paths: list[str],
+    returns_dir: Path,
+    stream_prints: bool,
 ) -> StreamingResponse:
     """Execute the function and stream start/print/result SSE events.
 
@@ -49,7 +48,7 @@ async def call_function(
 
                 result_holder["data"] = {
                     "success": True,
-                    **process_result(result),
+                    **process_result(result, returns_dir),
                 }
             except Exception as exc:
                 result_holder["data"] = {
@@ -68,13 +67,13 @@ async def call_function(
         # Poll captured prints while execution is still running.
         while not done.is_set():
             lines = cap.drain()
-            if STREAM_PRINTS and lines:
+            if stream_prints and lines:
                 yield f"event: print\ndata: {json.dumps(lines)}\n\n"
             await asyncio.sleep(0.05)
 
         # Flush any late print output before sending the final result.
         lines = cap.drain()
-        if STREAM_PRINTS and lines:
+        if stream_prints and lines:
             yield f"event: print\ndata: {json.dumps(lines)}\n\n"
 
         yield f"event: result\ndata: {json.dumps(result_holder['data'])}\n\n"

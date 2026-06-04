@@ -9,7 +9,6 @@ from .core.utils import create_pytypeinput_assets
 
 from .models import FunctionMetadata
 from .routes import setup_multi_items, setup_single_function, setup_download_route, setup_doc_route
-from . import call_function
 
 
 def run(
@@ -67,27 +66,26 @@ def run(
 
     create_pytypeinput_assets()
 
-    if uploads_dir is None:
-        uploads_dir = Path(tempfile.gettempdir()) / "func_to_web_uploads"
-    save_file_handler.UPLOADS_DIR = Path(uploads_dir)
-    save_file_handler.MAX_FILE_SIZE = max_file_size
+    # Resolve runtime config as locals (incl. temp-dir defaults) and inject it
+    # downward — no module-level state is mutated.
+    uploads_dir = (
+        Path(uploads_dir) if uploads_dir is not None
+        else Path(tempfile.gettempdir()) / "func_to_web_uploads"
+    )
+    returns_dir = (
+        Path(returns_dir) if returns_dir is not None
+        else Path(tempfile.gettempdir()) / "func_to_web_returned_files"
+    )
 
-    if returns_dir is None:
-        returns_dir = Path(tempfile.gettempdir()) / "func_to_web_returned_files"
-    return_file_handler.RETURNS_DIR = Path(returns_dir)
-    return_file_handler.RETURNS_LIFETIME_SECONDS = returns_lifetime
-
-    call_function.STREAM_PRINTS = stream_prints
-
-    count = save_file_handler.cleanup_uploads_dir()
+    count = save_file_handler.cleanup_uploads_dir(uploads_dir)
     if count > 0:
         print(f"Cleaned up {count} leftover upload folders from previous run")
 
-    count = return_file_handler.cleanup_returned_files()
+    count = return_file_handler.cleanup_returned_files(returns_dir, returns_lifetime)
     if count > 0:
         print(f"Cleaned up {count} expired returned files from previous run")
 
-    return_file_handler.start_cleanup_timer()
+    return_file_handler.start_cleanup_timer(returns_dir, returns_lifetime)
 
     app_input = normalize_input(func, app_title, css_vars, favicon)
 
@@ -96,12 +94,20 @@ def run(
 
     app = create_fastapi_app(root_path, fastapi_config, front_dir, assets_dir)
 
-    setup_download_route(app)
+    setup_download_route(app, returns_dir)
     setup_doc_route(app, app_input)
 
     if app_input.single_function:
-        setup_single_function(app, app_input)
+        setup_single_function(
+            app, app_input,
+            uploads_dir=uploads_dir, max_file_size=max_file_size,
+            returns_dir=returns_dir, stream_prints=stream_prints,
+        )
     else:
-        setup_multi_items(app, app_input)
+        setup_multi_items(
+            app, app_input,
+            uploads_dir=uploads_dir, max_file_size=max_file_size,
+            returns_dir=returns_dir, stream_prints=stream_prints,
+        )
 
     start_server(app, host, port, uvicorn_kwargs)

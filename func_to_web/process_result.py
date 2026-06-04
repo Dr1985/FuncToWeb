@@ -1,5 +1,6 @@
 import io
 import base64
+from pathlib import Path
 from .types import FileResponse, ActionTable
 from .core.return_file_handler import save_returned_file
 from .core.table import try_process_table
@@ -38,9 +39,9 @@ def process_matplotlib_figure(figure) -> dict:
     return {"type": "image", "data": f"data:image/png;base64,{b64}"}
 
 
-def process_file_response(file_response: FileResponse) -> dict:
+def process_file_response(file_response: FileResponse, returns_dir: Path) -> dict:
     """Save a FileResponse and return a download descriptor."""
-    file_id, _ = save_returned_file(file_response)
+    file_id, _ = save_returned_file(file_response, returns_dir)
     return {
         "type": "download",
         "file_id": file_id,
@@ -48,11 +49,11 @@ def process_file_response(file_response: FileResponse) -> dict:
     }
 
 
-def process_file_response_list(items: list[FileResponse]) -> dict:
+def process_file_response_list(items: list[FileResponse], returns_dir: Path) -> dict:
     """Save multiple FileResponse objects and return a batch download descriptor."""
     files = []
     for f in items:
-        file_id, _ = save_returned_file(f)
+        file_id, _ = save_returned_file(f, returns_dir)
         files.append({"file_id": file_id, "filename": f.filename})
     return {"type": "downloads", "files": files}
 
@@ -86,7 +87,7 @@ def _is_matplotlib_figure(obj) -> bool:
         return False
 
 
-def _process_single(result) -> dict:
+def _process_single(result, returns_dir: Path) -> dict:
     """Serialize a single return value.
 
     Order matters:
@@ -104,7 +105,7 @@ def _process_single(result) -> dict:
         return process_str("Done")
 
     if isinstance(result, (tuple, list)):
-        return process_result(result)
+        return process_result(result, returns_dir)
 
     if isinstance(result, str):
         return process_str(result)
@@ -113,7 +114,7 @@ def _process_single(result) -> dict:
         return process_action_table(result)
 
     if isinstance(result, FileResponse):
-        return process_file_response(result)
+        return process_file_response(result, returns_dir)
 
     if _is_pil_image(result):
         return process_pil_image(result)
@@ -129,7 +130,7 @@ def _process_single(result) -> dict:
     return process_str(str(result))
 
 
-def process_result(result) -> dict:
+def process_result(result, returns_dir: Path) -> dict:
     """Top-level dispatcher for function return values.
 
     Handles sequences first, then falls back to single-value processing.
@@ -139,13 +140,13 @@ def process_result(result) -> dict:
             return process_str("Done")
 
         if all(isinstance(item, FileResponse) for item in result):
-            return process_file_response_list(list(result))
+            return process_file_response_list(list(result), returns_dir)
 
         table = try_process_table(result)
         if table is not None:
             return table
 
-        items = [_process_single(item) for item in result if item is not None]
+        items = [_process_single(item, returns_dir) for item in result if item is not None]
 
         if len(items) == 1:
             return items[0]
@@ -153,4 +154,4 @@ def process_result(result) -> dict:
         if len(items) > 1:
             return {"type": "multiple", "data": items}
 
-    return _process_single(result)
+    return _process_single(result, returns_dir)
