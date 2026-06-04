@@ -49,7 +49,22 @@ run(my_function, port=5000)
 run(my_function, root_path="/tools/my-app")
 ```
 
-Set `root_path` to the prefix your proxy serves under and the whole UI works: every internal URL (styles/scripts, form submit, navigation, downloads, `ActionTable`) is derived per request from `root_path`, so nothing points at the domain root. A trailing slash is fine — it's normalized. (Mounting a FuncToWeb app inside a larger app via `create_app()` is coming next.)
+Set `root_path` to the prefix your proxy serves under and the whole UI works: every internal URL (styles/scripts, form submit, navigation, downloads, `ActionTable`) is derived per request from `root_path`, so nothing points at the domain root. A trailing slash is fine — it's normalized.
+
+**Embedding in a larger FastAPI app:**
+```python
+from fastapi import FastAPI
+from func_to_web import create_app
+
+host = FastAPI()
+host.mount("/tools", create_app([add, multiply]))
+```
+
+`create_app()` accepts the same configuration as `run()` except the server
+options (`host`, `port`, `root_path`, `**uvicorn_kwargs`). The mount prefix is
+picked up per request automatically. Serving by import string also enables
+`uvicorn mymodule:app --workers 4` and `--reload`. Note that the startup
+cleanup of leftover uploads only runs in `run()` — see the changelog.
 
 **Custom frontend + static assets:**
 ```python

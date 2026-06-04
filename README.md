@@ -4,15 +4,16 @@
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> Type hints → Web UI. Minimal-boilerplate web apps from Python functions.
+> Type hints → Web UI. Turn Python functions into web apps — standalone or mounted inside yours.
 
 ![func-to-web Demo](/docs/images/functoweb.jpg)
 
-One typed Python function → form + iframe + HTTP endpoint, simultaneously. Three ways to use it:
+One typed Python function → form + iframe + HTTP endpoint, simultaneously. It's a library, not a framework: it composes with what you already have.
 
-- **Standalone** — internal tools, admin panels, scripts. The auto-generated UI is the app.
+- **Standalone** — `run(func)`. Internal tools, admin panels, scripts. The auto-generated UI is the app.
+- **Mounted** — `create_app(funcs)` returns a plain FastAPI app. Mount it under any prefix of your existing app; every URL adapts automatically.
 - **Embedded** — drop forms into existing sites via `<iframe>` with URL prefill. "Export to PDF" buttons, CSV importers, modal editors.
-- **Backend for your own SPA** — Drop your built bundle in front_dir= and static files in assets_dir= — served alongside your functions by the same process.
+- **Backend for your own SPA** — drop your built bundle in `front_dir=` and static files in `assets_dir=` — served alongside your functions by the same process.
 
 Validation, file uploads, SSE streaming, downloads, custom widgets and outputs via return types and Annotated metadata — all built-in. Auto-generated API docs at /doc for scripts and AI agents: write a function, get a UI and an API for free.
 
@@ -34,6 +35,25 @@ run(divide)
 ![divide demo](/docs/images/quick.jpg)
 
 Open `http://127.0.0.1:8000`. Done.
+
+## Or mount it inside your FastAPI app
+
+```python
+from fastapi import FastAPI
+from func_to_web import create_app
+
+def add(a: int, b: int):
+    return a + b
+
+host = FastAPI()
+host.mount("/tools", create_app(add))
+```
+
+```bash
+uvicorn app:host
+```
+
+Open `http://127.0.0.1:8000/tools`. Forms, validation, downloads, navigation — everything works under the prefix, zero configuration.
 
 **Full docs with examples and screenshots:** [offerrall.github.io/FuncToWeb](https://offerrall.github.io/FuncToWeb)
 
@@ -67,6 +87,7 @@ Open `http://127.0.0.1:8000`. Done.
 
 ## Features
 
+- **`create_app()`** — get a mountable FastAPI app, serve by import string (workers, reload) — [docs](docs/config.md)
 - **Multiple functions** with index page or groups — [docs](docs/multiple.md)
 - **URL prefill** — open forms with values from query params — [docs](docs/url_prefill.md)
 - **Embed mode** — drop any form into your site via `?__embed=1` — [docs](docs/embed.md)

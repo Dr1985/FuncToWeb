@@ -6,6 +6,32 @@ This release is a big simplification pass. The goal: remove features that can be
 
 1.5.0 is the update that takes FuncToWeb from "tool for spinning up mini programs" to "backend for SPA web apps" — without losing anything from its original mode. FuncToWeb is still the same as day one, just more powerful: the auto-generated form UI, single/multi function apps, and everything you already use keep working exactly as before.
 
+### Added
+- `create_app()`: builds the FuncToWeb FastAPI application without starting a
+  server. This makes the library embeddable — mount it inside a larger app —
+  and unlocks `uvicorn --workers N` / `--reload` by serving via import string
+  (both are rejected by `run()`, which serves an app instance):
+
+  ```python
+  from fastapi import FastAPI
+  from func_to_web import create_app
+
+  host = FastAPI()
+  host.mount("/tools", create_app([add, multiply]))
+  ```
+
+  All internal URLs are derived per request from the ASGI `root_path`, so a
+  mounted app works under any prefix with no configuration. `run()` is now a
+  thin wrapper: guards + startup sweeps + `create_app()` + Uvicorn; its public
+  signature and behavior are unchanged.
+
+  Note: the startup sweeps (leftover upload folders, expired returned files)
+  run only in `run()`. `create_app()` deliberately skips them — under multiple
+  workers, each worker builds its own app, and sweeping the shared directories
+  on every build could delete a sibling worker's in-flight uploads during
+  rolling restarts. Expired returned files are still cleaned opportunistically
+  at runtime.
+
 ### Changed
 - **Internal CSS/JS bundles are now built in memory and served from routes, not written to a temp dir** — `create_pytypeinput_assets()` (which concatenated pytypeinputweb + `internal_static` assets and wrote `styles.css`/`scripts.js` to `<temp>/func_to_web/static`, mounted at `/static`) is replaced by `build_static_assets()`, which returns the two bundles as strings; they're served by two FastAPI routes captured in a closure. Why: the temp-dir files let two processes (or two installed versions) clobber each other's bundles, and caused `PermissionError` on shared multi-user temp dirs on Linux. Nothing is written to disk anymore. The internal asset URLs changed: `/static/styles.css` → `/_functoweb/static/styles.css` and `/static/scripts.js` → `/_functoweb/static/scripts.js` (internal URLs; `/front` and `/assets` are unaffected).
 - **Returned-file cleanup is now opportunistic instead of timer-based** — the per-process background daemon thread (`start_cleanup_timer`) that swept `returns_dir` every `returns_lifetime` seconds has been removed. Cleanup now runs lazily on activity — when a file is saved (`FileResponse`) or downloaded — throttled by a `.last_cleanup` marker file so it does real work at most once per `returns_lifetime` window. Why: under the upcoming multi-process `create_app()` deployments, N workers would have spawned N redundant threads sweeping the same directory (and a library spawning daemon threads is undesirable in general); the marker approach is multi-process safe by being harmless (no locks — duplicate deletes are ignored). Observable contract change: expired files are now deleted on the next save/download after expiry rather than on a fixed timer; the boot-time cleanup in `run()` still applies. `returns_lifetime` keeps the same meaning.
