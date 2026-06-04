@@ -6,7 +6,7 @@ from typing import Any
 from pytypeinputweb import list_css_variables as _pti_css_variables
 from pytypeinputweb import get_css, get_js
 
-from .constants import INTERNAL_STATIC_DIR, STATIC_DIR, INTERNAL_STATIC_DIR
+from .constants import INTERNAL_STATIC_DIR, STATIC_DIR
 
 _MIME_TYPES = {
     ".ico": "image/x-icon",
