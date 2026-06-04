@@ -98,13 +98,15 @@ def create_handlers(
     uploads_dir: Path,
     max_file_size: int | None,
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> tuple:
     """Create the page and submit handlers for a function.
 
     The runtime config (`uploads_dir`, `max_file_size`, `returns_dir`,
-    `stream_prints`) is captured by the `page_handler`/`submit_handler` closures,
-    the same way `meta` and `base_url` already are.
+    `returns_lifetime`, `stream_prints`) is captured by the
+    `page_handler`/`submit_handler` closures, the same way `meta` and `base_url`
+    already are.
     """
     # Analyze once; Params subclasses are expanded into individual fields.
     params, params_map = _analyze(meta.function)
@@ -208,7 +210,7 @@ def create_handlers(
                     }, status_code=422)
 
             return await call_function(
-                meta, validated, saved_paths, returns_dir, stream_prints
+                meta, validated, saved_paths, returns_dir, returns_lifetime, stream_prints
             )
 
         except Exception as e:

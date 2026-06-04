@@ -100,8 +100,6 @@ def run(
     if count > 0:
         print(f"Cleaned up {count} expired returned files from previous run")
 
-    return_file_handler.start_cleanup_timer(returns_dir, returns_lifetime)
-
     app_input = normalize_input(func, app_title, css_vars, favicon)
 
     if fastapi_config is None:
@@ -109,20 +107,22 @@ def run(
 
     app = create_fastapi_app(root_path, fastapi_config, front_dir, assets_dir)
 
-    setup_download_route(app, returns_dir)
+    setup_download_route(app, returns_dir, returns_lifetime)
     setup_doc_route(app, app_input)
 
     if app_input.single_function:
         setup_single_function(
             app, app_input,
             uploads_dir=uploads_dir, max_file_size=max_file_size,
-            returns_dir=returns_dir, stream_prints=stream_prints,
+            returns_dir=returns_dir, returns_lifetime=returns_lifetime,
+            stream_prints=stream_prints,
         )
     else:
         setup_multi_items(
             app, app_input,
             uploads_dir=uploads_dir, max_file_size=max_file_size,
-            returns_dir=returns_dir, stream_prints=stream_prints,
+            returns_dir=returns_dir, returns_lifetime=returns_lifetime,
+            stream_prints=stream_prints,
         )
 
     start_server(app, host, port, uvicorn_kwargs)

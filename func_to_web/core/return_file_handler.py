@@ -1,7 +1,12 @@
 import time
 import uuid
-import threading
 from pathlib import Path
+
+
+# Marker file used to throttle opportunistic cleanup. Its name has no "___"
+# separators, so _decode_filename() returns None for it and cleanup_returned_files
+# never treats it as a returned file (never deletes it).
+CLEANUP_MARKER = ".last_cleanup"
 
 
 def _encode_filename(file_id: str, timestamp: int, filename: str) -> str:
@@ -19,12 +24,18 @@ def _decode_filename(name: str) -> dict | None:
         return None
 
 
-def save_returned_file(file_response, returns_dir: Path) -> tuple[str, str]:
+def save_returned_file(
+    file_response, returns_dir: Path, returns_lifetime: int
+) -> tuple[str, str]:
     """Save a FileResponse to disk.
+
+    Runs opportunistic cleanup first (throttled, cheap when recent).
 
     Returns:
         (file_id, file_path)
     """
+    maybe_cleanup(returns_dir, returns_lifetime)
+
     if file_response.path is not None:
         data = Path(file_response.path).read_bytes()
     else:
@@ -75,6 +86,8 @@ def cleanup_returned_files(returns_dir: Path, returns_lifetime: int) -> int:
     for p in returns_dir.iterdir():
         if not p.is_file():
             continue
+        # _decode_filename returns None for the .last_cleanup marker (no "___"),
+        # so the marker is skipped here and never deleted.
         meta = _decode_filename(p.name)
         if meta and (now - meta["timestamp"]) > returns_lifetime:
             try:
@@ -87,19 +100,28 @@ def cleanup_returned_files(returns_dir: Path, returns_lifetime: int) -> int:
     return count
 
 
-def start_cleanup_timer(returns_dir: Path, returns_lifetime: int) -> None:
-    """Start a background thread that cleans up expired returned files every hour.
+def maybe_cleanup(returns_dir: Path, returns_lifetime: int) -> None:
+    """Opportunistically clean up expired returned files, throttled by a marker.
 
-    Safe to call multiple times — only starts one thread per process.
-    The thread is a daemon so it dies automatically when the process exits.
+    A `.last_cleanup` marker file in `returns_dir` records (via its mtime) when
+    cleanup last ran. If it is younger than `returns_lifetime` seconds, this is a
+    cheap no-op (a single stat). Otherwise the marker is refreshed and
+    `cleanup_returned_files` runs.
+
+    Multi-process safe by being harmless: there are no locks on purpose. If two
+    processes pass the freshness check at the same time, both run cleanup — the
+    duplicate `unlink()` calls are already swallowed as OSError in
+    `cleanup_returned_files`.
     """
-    def _loop():
-        while True:
-            time.sleep(returns_lifetime)
-            try:
-                cleanup_returned_files(returns_dir, returns_lifetime)
-            except Exception:
-                pass
+    marker = returns_dir / CLEANUP_MARKER
 
-    t = threading.Thread(target=_loop, daemon=True)
-    t.start()
+    try:
+        if (time.time() - marker.stat().st_mtime) < returns_lifetime:
+            return
+    except OSError:
+        # Marker missing or unreadable — fall through and run cleanup.
+        pass
+
+    returns_dir.mkdir(parents=True, exist_ok=True)
+    marker.touch()
+    cleanup_returned_files(returns_dir, returns_lifetime)

@@ -9,7 +9,7 @@ from .builder import render_index
 from .models import FunctionMetadata, NormalizedInput
 from .core.docs import build_doc
 from .core.normalization import get_all_functions
-from .core.return_file_handler import get_returned_file
+from .core.return_file_handler import get_returned_file, maybe_cleanup
 from .route_handlers import create_handlers
 
 
@@ -25,13 +25,14 @@ def register_function_routes(
     uploads_dir: Path,
     max_file_size: int | None,
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
     """Register routes for a single function."""
     page_handler, submit_handler = create_handlers(
         meta, app_input, base_url=url,
         uploads_dir=uploads_dir, max_file_size=max_file_size,
-        returns_dir=returns_dir, stream_prints=stream_prints,
+        returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
     )
 
     app.get(url, response_class=HTMLResponse)(page_handler)
@@ -46,6 +47,7 @@ def register_navigation_routes(
     uploads_dir: Path,
     max_file_size: int | None,
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
     """Recursively register routes for all navigation items."""
@@ -59,13 +61,13 @@ def register_navigation_routes(
                 register_function_routes(
                     app, meta, app_input, item["url"],
                     uploads_dir=uploads_dir, max_file_size=max_file_size,
-                    returns_dir=returns_dir, stream_prints=stream_prints,
+                    returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
                 )
         else:
             register_navigation_routes(
                 app, item["children"], app_input,
                 uploads_dir=uploads_dir, max_file_size=max_file_size,
-                returns_dir=returns_dir, stream_prints=stream_prints,
+                returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
             )
 
 
@@ -76,6 +78,7 @@ def setup_multi_items(
     uploads_dir: Path,
     max_file_size: int | None,
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
 
@@ -91,7 +94,7 @@ def setup_multi_items(
     register_navigation_routes(
         app, app_input.navigation_data, app_input,
         uploads_dir=uploads_dir, max_file_size=max_file_size,
-        returns_dir=returns_dir, stream_prints=stream_prints,
+        returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
     )
 
 
@@ -102,6 +105,7 @@ def setup_single_function(
     uploads_dir: Path,
     max_file_size: int | None,
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
     """Set up routes for single-function mode."""
@@ -110,14 +114,14 @@ def setup_single_function(
     page_handler, submit_handler = create_handlers(
         meta, app_input, base_url="",
         uploads_dir=uploads_dir, max_file_size=max_file_size,
-        returns_dir=returns_dir, stream_prints=stream_prints,
+        returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
     )
 
     app.get("/", response_class=HTMLResponse)(page_handler)
     app.post("/submit")(submit_handler)
 
 
-def setup_download_route(app: FastAPI, returns_dir: Path) -> None:
+def setup_download_route(app: FastAPI, returns_dir: Path, returns_lifetime: int) -> None:
     """Register the file download route."""
 
     @app.get("/download/{file_id}")
@@ -125,6 +129,9 @@ def setup_download_route(app: FastAPI, returns_dir: Path) -> None:
         # Reject invalid IDs before touching the file store.
         if not UUID_PATTERN.match(file_id):
             return JSONResponse({"error": "Invalid file ID"}, status_code=400)
+
+        # Opportunistic, throttled cleanup of expired files on download activity.
+        maybe_cleanup(returns_dir, returns_lifetime)
 
         file_info = get_returned_file(file_id, returns_dir)
         if not file_info:

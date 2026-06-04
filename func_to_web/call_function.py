@@ -21,6 +21,7 @@ async def call_function(
     validated: dict,
     saved_paths: list[str],
     returns_dir: Path,
+    returns_lifetime: int,
     stream_prints: bool,
 ) -> StreamingResponse:
     """Execute the function and stream start/print/result SSE events.
@@ -48,7 +49,7 @@ async def call_function(
 
                 result_holder["data"] = {
                     "success": True,
-                    **process_result(result, returns_dir),
+                    **process_result(result, returns_dir, returns_lifetime),
                 }
             except Exception as exc:
                 result_holder["data"] = {
