@@ -23,8 +23,7 @@ run(my_function, host="127.0.0.1", port=8000)
 | `favicon` | `None` | Path to favicon file |
 | `uploads_dir` | OS temp dir | Uploaded files directory (defaults to `<temp>/func_to_web_uploads`) |
 | `max_file_size` | `None` | Max upload size in bytes |
-| `keep_uploads` | `False` | Keep uploads after execution |
-| `returns_dir` | `"./returned_files"` | Returned files directory |
+| `returns_dir` | OS temp dir | Returned files directory (defaults to `<temp>/func_to_web_returned_files`) |
 | `returns_lifetime` | `3600` | Seconds before returned files are deleted |
 | `stream_prints` | `True` | Stream `print()` to browser |
 | `root_path` | `""` | URL prefix for reverse proxy |

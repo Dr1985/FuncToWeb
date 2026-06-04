@@ -24,8 +24,7 @@ def run(
     favicon: str | Path | None = None,
     uploads_dir: str | Path | None = None,
     max_file_size: int | None = None,
-    keep_uploads: bool = False,
-    returns_dir: str | Path = "./returned_files",
+    returns_dir: str | Path | None = None,
     returns_lifetime: int = 3600,
     stream_prints: bool = True,
     root_path: str = "",
@@ -48,8 +47,8 @@ def run(
         uploads_dir: Directory for uploaded files. Defaults to a
             "func_to_web_uploads" folder inside the OS temp dir.
         max_file_size: Maximum size in bytes for uploaded files, None for unlimited.
-        keep_uploads: If True, uploaded files are not deleted after function execution.
-        returns_dir: Directory for files returned by functions.
+        returns_dir: Directory for files returned by functions. Defaults to a
+            "func_to_web_returned_files" folder inside the OS temp dir.
         returns_lifetime: Seconds before returned files are deleted (default: 3600).
         stream_prints: If True, print() output is streamed to the client in real time.
         root_path: FastAPI root path for reverse proxy.
@@ -65,8 +64,9 @@ def run(
         uploads_dir = Path(tempfile.gettempdir()) / "func_to_web_uploads"
     save_file_handler.UPLOADS_DIR = Path(uploads_dir)
     save_file_handler.MAX_FILE_SIZE = max_file_size
-    save_file_handler.KEEP_UPLOADS = keep_uploads
 
+    if returns_dir is None:
+        returns_dir = Path(tempfile.gettempdir()) / "func_to_web_returned_files"
     return_file_handler.RETURNS_DIR = Path(returns_dir)
     return_file_handler.RETURNS_LIFETIME_SECONDS = returns_lifetime
 

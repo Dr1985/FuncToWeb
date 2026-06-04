@@ -176,7 +176,7 @@ def create_handlers(
                         paths.append(path)
                 except ValueError as e:
                     for p in saved_paths:
-                        cleanup_uploaded_file(p, force=True)
+                        cleanup_uploaded_file(p)
                     return JSONResponse({
                         "success": False,
                         "errors": {name: str(e)},
@@ -201,7 +201,7 @@ def create_handlers(
 
         except Exception as e:
             for p in saved_paths:
-                cleanup_uploaded_file(p, force=True)
+                cleanup_uploaded_file(p)
             return JSONResponse({
                 "success": False,
                 "error": str(e),

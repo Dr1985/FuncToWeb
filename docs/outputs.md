@@ -122,7 +122,7 @@ def export():
     return FileResponse(path="/tmp/output.zip", filename="export.zip")
 ```
 
-> Configure the returns directory and lifetime via `run(returns_dir=..., returns_lifetime=3600)`.
+> Returned files are stored in `<os-temp-dir>/func_to_web_returned_files` by default and deleted after `returns_lifetime` seconds. Configure both via `run(returns_dir=..., returns_lifetime=3600)`.
 
 ![File Downloads](images/output6.jpg)
 

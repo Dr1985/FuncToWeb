@@ -9,7 +9,6 @@ CHUNK_SIZE = 8 * 1024 * 1024
 
 UPLOADS_DIR = Path(tempfile.gettempdir()) / "func_to_web_uploads"
 MAX_FILE_SIZE: int | None = None
-KEEP_UPLOADS: bool = False
 
 
 async def save_uploaded_file(uploaded_file: Any) -> str:
@@ -43,19 +42,14 @@ async def save_uploaded_file(uploaded_file: Any) -> str:
     return str(file_path)
 
 
-def cleanup_uploaded_file(file_path: str, force: bool = False) -> None:
-    """Delete uploaded file and its UUID folder.
-    Skips if keep_uploads is enabled unless force is True (error cleanup)."""
-    if KEEP_UPLOADS and not force:
-        return
-
+def cleanup_uploaded_file(file_path: str) -> None:
+    """Delete uploaded file and its UUID folder."""
     _remove_folder(Path(file_path).parent)
 
 
 def cleanup_uploads_dir() -> int:
-    """Remove all folders in uploads dir. Run once at startup.
-    Skips if keep_uploads is enabled."""
-    if KEEP_UPLOADS or not UPLOADS_DIR.exists():
+    """Remove all folders in uploads dir. Run once at startup."""
+    if not UPLOADS_DIR.exists():
         return 0
 
     count = 0

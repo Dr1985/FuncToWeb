@@ -14,8 +14,11 @@
 ### Changed
 - **Default `limit_max_requests` raised from 1000 to 10000** — the previous limit recycled the Uvicorn worker too aggressively for apps serving many static assets per page (e.g. image grids), causing the process to restart mid-session
 - **Fixed pytypeinput and pytypeinputweb version numbers in dependencies** — updated to the latest versions (1.0.2 and 1.0.3 respectively) to ensure compatibility with the new features and fixes in those libraries
-- **Default uploads directory moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` (resolved via `tempfile.gettempdir()`) instead of `./uploads` in the current working directory; uploads no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` to keep the previous behaviour
+- **Default uploads and returned-files directories moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` and `returns_dir` to `<os-temp-dir>/func_to_web_returned_files` (resolved via `tempfile.gettempdir()`), instead of `./uploads` and `./returned_files` in the current working directory; transient files no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` / `returns_dir=...` to keep the previous behaviour
 - **Uploads and returned-files directories are now created lazily** — `uploads/` and `returned_files/` are no longer created at server startup; each directory is created on demand the first time a file is actually uploaded or returned, so apps with no file I/O never create them
+
+### Removed
+- **`keep_uploads` parameter** — removed from `run()`. Uploaded files were transient by design and are always cleaned up after the function finishes; persisting them is now done explicitly by moving the file out of `uploads_dir` (e.g. with `shutil.move()`) before returning
 
 ## [1.0.1] - 2026-04-28
 

@@ -150,8 +150,8 @@ def upload_cleanup(photo: ImageFile):
 run(upload_cleanup)
 ```
 
-To disable auto-cleanup entirely and configure the upload directory:
+To configure the upload directory:
 
 ```python
-run(upload_cleanup, keep_uploads=True, uploads_dir="/data/uploads")
+run(upload_cleanup, uploads_dir="/data/uploads")
 ```

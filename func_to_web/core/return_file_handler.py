@@ -1,10 +1,11 @@
 import os
 import time
 import uuid
+import tempfile
 import threading
 from pathlib import Path
 
-RETURNS_DIR = Path("./returned_files")
+RETURNS_DIR = Path(tempfile.gettempdir()) / "func_to_web_returned_files"
 RETURNS_LIFETIME_SECONDS: int = 3600
 
 
