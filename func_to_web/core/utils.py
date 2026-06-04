@@ -6,7 +6,7 @@ from typing import Any
 from pytypeinputweb import list_css_variables as _pti_css_variables
 from pytypeinputweb import get_css, get_js
 
-from .constants import INTERNAL_STATIC_DIR, STATIC_DIR
+from .constants import INTERNAL_STATIC_DIR
 
 _MIME_TYPES = {
     ".ico": "image/x-icon",
@@ -20,13 +20,14 @@ _MIME_TYPES = {
 _CSS_VAR_DEF_RE = re.compile(r"(--functoweb-[\w-]+)\s*:")
 _SLUG_RE = re.compile(r"^[a-z0-9_-]+$")
 
-def create_pytypeinput_assets() -> dict[str, Path]:
-    """Create CSS and JS assets."""
-    STATIC_DIR.mkdir(parents=True, exist_ok=True)
+def build_static_assets() -> tuple[str, str]:
+    """Build the combined CSS and JS bundles in memory.
 
-    css_file = STATIC_DIR / "styles.css"
-    js_file = STATIC_DIR / "scripts.js"
-
+    Concatenates pytypeinputweb's assets with FuncToWeb's internal_static files.
+    Returns ``(css, js)`` as strings — nothing is written to disk, so multiple
+    processes/versions can't clobber each other's files (and there's no
+    PermissionError on shared temp dirs).
+    """
     pytypeinput_css = get_css()
     pytypeinput_js = get_js()
 
@@ -45,10 +46,7 @@ def create_pytypeinput_assets() -> dict[str, Path]:
     combined_css = f"{pytypeinput_css}\n\n{functoweb_css}"
     combined_js = f"{pytypeinput_js}\n\n{functoweb_js}"
 
-    css_file.write_text(combined_css, encoding='utf-8')
-    js_file.write_text(combined_js, encoding='utf-8')
-
-    return {'css': css_file, 'js': js_file}
+    return combined_css, combined_js
 
 def encode_favicon_to_base64(favicon_path: str | Path) -> str:
     """Encode a favicon file to base64 data URI."""

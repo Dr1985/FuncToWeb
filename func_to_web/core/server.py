@@ -2,9 +2,10 @@ from typing import Any
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
 import uvicorn
 
-from .constants import STATIC_DIR, UVICORN_DEFAULTS
+from .constants import UVICORN_DEFAULTS
 
 
 def create_fastapi_app(
@@ -13,7 +14,7 @@ def create_fastapi_app(
     front_dir: str | Path | None = None,
     assets_dir: str | Path | None = None,
 ) -> FastAPI:
-    """Create and configure the FastAPI app (including /static)."""
+    """Create and configure the FastAPI app."""
     base_config = {"root_path": root_path}
 
     if fastapi_config:
@@ -22,8 +23,6 @@ def create_fastapi_app(
 
     app = FastAPI(**base_config)
 
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
     if front_dir is not None:
         app.mount("/front", StaticFiles(directory=Path(front_dir), html=True), name="front")
 
@@ -31,6 +30,20 @@ def create_fastapi_app(
         app.mount("/assets", StaticFiles(directory=Path(assets_dir)), name="assets")
 
     return app
+
+
+def setup_static_routes(app: FastAPI, css: str, js: str) -> None:
+    """Serve the combined CSS/JS bundles from memory (no disk writes).
+
+    The bundles are captured by closure. No cache headers / ETag / compression.
+    """
+    @app.get("/_functoweb/static/styles.css")
+    async def _functoweb_styles():
+        return Response(css, media_type="text/css")
+
+    @app.get("/_functoweb/static/scripts.js")
+    async def _functoweb_scripts():
+        return Response(js, media_type="application/javascript")
 
 
 def start_server(

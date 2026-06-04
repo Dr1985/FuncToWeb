@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .core import save_file_handler, return_file_handler
-from .core.server import create_fastapi_app, start_server
+from .core.server import create_fastapi_app, start_server, setup_static_routes
 from .core.normalization import normalize_input
-from .core.utils import create_pytypeinput_assets
+from .core.utils import build_static_assets
 
 from .models import FunctionMetadata
 from .routes import setup_multi_items, setup_single_function, setup_download_route, setup_doc_route
@@ -82,7 +82,7 @@ def run(
             "with an import string (e.g. 'uvicorn mymodule:app --reload')."
         )
 
-    create_pytypeinput_assets()
+    static_css, static_js = build_static_assets()
 
     uploads_dir = (
         Path(uploads_dir) if uploads_dir is not None
@@ -108,6 +108,7 @@ def run(
 
     app = create_fastapi_app(root_path, fastapi_config, front_dir, assets_dir)
 
+    setup_static_routes(app, static_css, static_js)
     setup_download_route(app, returns_dir, returns_lifetime)
     setup_doc_route(app, app_input)
 
