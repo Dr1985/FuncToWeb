@@ -178,7 +178,7 @@ reshaped, and minor releases can break things. Every breaking change is
 explicit — documented in the [CHANGELOG](CHANGELOG.md) with the reasoning and
 the migration path, never silent.
 
-If you depend on it today, **pin your version** (e.g. `func-to-web==1.5.1`) and
+If you depend on it today, **pin your version** (e.g. `func-to-web==1.6.0`) and
 read the changelog before upgrading.
 
 **The 2.0.0 commitment:** from 2.0.0 onwards, FuncToWeb adopts semantic

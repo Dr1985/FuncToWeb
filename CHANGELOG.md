@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.5.1] - 2026-06-05
+## [1.6.0] - 2026-06-05
 
 ### Fixed
 - **The package no longer ships unrelated top-level folders** — `setuptools` was
