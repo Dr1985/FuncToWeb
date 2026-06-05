@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Annotated, Literal
 from datetime import date, time
+from dataclasses import dataclass
 
 from pydantic import Field, BaseModel, model_validator
 from pytypeinput.types import (Color, Email, ImageFile, VideoFile,
@@ -71,18 +72,22 @@ class FileResponse(BaseModel):
 
 
 class Params:
-    """Base class for grouping function parameters.
-    
-    Subclass this to define reusable parameter groups.
-    Functoweb expands fields automatically into the form.
+    """Immutable group of parameters.
+
+    Subclass with annotated fields. Subclasses become frozen
+    dataclasses automatically: constructible with keyword arguments,
+    comparable, hashable, immutable. Use __post_init__ for
+    cross-field validation or derived fields (raise ValueError there
+    and the form shows it as a 422 validation error).
 
     Example:
         class UserData(Params):
             name: Annotated[str, Field(min_length=2)]
             email: Email
-            role: Literal["admin", "user"] = "user"
+            age: int = 18
 
-        def create_user(data: UserData): ...
-        def edit_user(id: int, data: UserData): ...
+        UserData(name="Ana", email="a@b.com")    # usable anywhere
     """
-    pass
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        dataclass(frozen=True)(cls)

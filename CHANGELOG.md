@@ -49,6 +49,29 @@
   naming the offending field/parameter and how to fix it (rename the field;
   flatten the nested class; make individual fields optional inside the
   class instead). Valid code is unaffected.
+- **Server-side validation errors (HTTP 422/400) are now shown in the UI instead
+  of being silently dropped** — the frontend fed every submit response through
+  the SSE parser; a 422 is plain JSON, matched no SSE blocks, and was discarded
+  without a trace, so submits failing server-only validation (notably a `Params`
+  `__post_init__` raising `ValueError`) appeared to do nothing. Non-200 responses
+  are now detected in both submit paths (fetch and XHR upload) and rendered in
+  the error block, listing each offending field and its message. Client-side
+  validation masked this for ordinary field constraints, which is why it went
+  unnoticed until server-only validation existed.
+
+### Changed
+- **`Params` subclasses are now frozen dataclasses** — `Params` was an empty
+  marker class and instances were rebuilt internally via `object.__new__` +
+  attribute assignment, which silently skipped any user-defined `__init__` and
+  produced half-constructed objects. Subclassing `Params` now applies
+  `@dataclass(frozen=True)` automatically: instances are constructible anywhere
+  (`UserData(name=..., email=...)`), comparable, hashable, and immutable, with
+  `dataclasses.replace()` for variants. Cross-field validation goes in
+  `__post_init__`; a `ValueError` raised there surfaces as a 422 form error.
+  Breaking: defining a custom `__init__` is no longer supported (the dataclass
+  generates it), and mutating a Params instance now raises `FrozenInstanceError`.
+  Internally, the manual `_reconstruct` step is gone — construction is just
+  `YourClass(**fields)`.
 
 ### Removed
 - **`aiofiles` dependency dropped** — it was used in a single place, the chunked

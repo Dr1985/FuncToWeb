@@ -8,3 +8,4 @@ Reusable parameter groups via the Params class.
 - `02_reused.py`
 - `03_methods.py`
 - `04_mixing.py`
+- `05_validation.py`

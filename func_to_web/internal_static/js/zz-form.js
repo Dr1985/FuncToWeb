@@ -131,6 +131,34 @@
         });
     }
 
+    /* ── Server error (non-200 responses, not SSE) ── */
+
+    function renderServerError(raw) {
+        // A 422/400 is plain JSON, not SSE — clear the container (like
+        // createSSEContext does) so the error replaces any previous result.
+        clearContainer();
+
+        let payload;
+        try {
+            payload = JSON.parse(raw);
+        } catch {
+            renderResult(true, "text", { data: "Server error: " + raw });
+            return;
+        }
+        if (payload.errors && typeof payload.errors === "object") {
+            // 422 validation: {"errors": {"param": "msg", ...}}
+            const lines = Object.entries(payload.errors)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join("\n");
+            renderResult(true, "text", { data: lines });
+        } else if (payload.error) {
+            // Generic 400: {"error": "msg"}
+            renderResult(true, "text", { data: payload.error });
+        } else {
+            renderResult(true, "text", { data: raw });
+        }
+    }
+
     /* ── File helpers ── */
 
     function hasFiles(detail) {
@@ -235,6 +263,8 @@
             });
 
             xhr.addEventListener("progress", () => {
+                // Don't feed SSE-parser fragments of a non-200 JSON error body.
+                if (xhr.status !== 200) return;
                 const text = xhr.responseText.slice(responseText.length);
                 responseText = xhr.responseText;
                 if (uploadDone && text) {
@@ -244,6 +274,10 @@
 
             xhr.addEventListener("load", () => {
                 hideOverlay(overlay);
+                if (xhr.status !== 200) {
+                    renderServerError(xhr.responseText);
+                    return;
+                }
                 const remaining = xhr.responseText.slice(responseText.length);
                 if (remaining) processSSEText(remaining);
                 processSSEText("\n\n");
@@ -261,6 +295,10 @@
         } else {
             try {
                 const res = await fetch(action, { method: "POST", body: formData });
+                if (!res.ok) {
+                    renderServerError(await res.text());
+                    return;
+                }
                 readSSE(res);
             } catch (err) {
                 renderResult(true, "text", { data: "Request failed: " + err.message });

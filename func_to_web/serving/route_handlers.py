@@ -18,14 +18,6 @@ from ..files.save_file_handler import save_uploaded_file, cleanup_uploaded_file
 from ..execution.call_function import call_function
 
 
-def _reconstruct(params_class, model_data: dict):
-    """Reconstruct a Params instance without calling __init__."""
-    obj = object.__new__(params_class)
-    for k, v in model_data.items():
-        object.__setattr__(obj, k, v)
-    return obj
-
-
 def _analyze(func) -> tuple[list[ParamMetadata], dict]:
     """Analyze a function's parameters, expanding Params subclasses into individual fields.
 
@@ -242,11 +234,14 @@ def create_handlers(
                     paths if params_by_name[name].list is not None else paths[0]
                 )
 
-            # Reconstruct Params instances from flat validated values.
+            # Build each Params instance from its flat validated fields. The
+            # subclass is a frozen dataclass, so this calls its generated
+            # __init__; a ValueError raised in the user's __post_init__
+            # (cross-field validation) is caught below and surfaced as a 422.
             for param_name, (params_class, field_names) in params_map.items():
                 model_data = {f: validated.pop(f) for f in field_names if f in validated}
                 try:
-                    validated[param_name] = _reconstruct(params_class, model_data)
+                    validated[param_name] = params_class(**model_data)
                 except (ValueError, TypeError) as e:
                     return JSONResponse({
                         "success": False,
