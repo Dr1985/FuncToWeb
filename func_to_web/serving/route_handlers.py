@@ -1,7 +1,8 @@
 import json
+import types
 import inspect
 from pathlib import Path
-from typing import get_type_hints
+from typing import Union, get_args, get_origin, get_type_hints
 
 from fastapi import Request
 from starlette.datastructures import UploadFile
@@ -46,12 +47,44 @@ def _analyze(func) -> tuple[list[ParamMetadata], dict]:
             for fname, ftype in class_hints.items():
                 if fname == "return":
                     continue
+                if isinstance(ftype, type) and issubclass(ftype, Params):
+                    raise ValueError(
+                        f"Nested Params are not supported: field '{fname}' of "
+                        f"'{annotation.__name__}' is a Params class. Flatten the "
+                        f"fields into one class or pass them as separate parameters."
+                    )
                 default = getattr(annotation, fname, inspect.Parameter.empty)
                 model_params.append(analyze_type(annotation=ftype, name=fname, default=default))
             params_map[p.name] = (annotation, [mp.name for mp in model_params])
             params.extend(model_params)
         else:
+            # A Params group cannot be optional: it has no single toggle, and the
+            # reconstruct step expects all its fields present. Reject Optional/Union
+            # wrappers (both typing.Union and the PEP 604 `X | None`) up front.
+            origin = get_origin(annotation)
+            if origin is Union or origin is types.UnionType:
+                if any(isinstance(arg, type) and issubclass(arg, Params)
+                       for arg in get_args(annotation)):
+                    raise ValueError(
+                        f"Optional Params are not supported: parameter '{p.name}' "
+                        f"is '{annotation}'. A Params group cannot be toggled off; "
+                        f"make individual fields optional inside the class instead."
+                    )
             params.append(analyze_type(annotation=annotation, name=p.name, default=p.default))
+
+    # Names must be unique across the flat list: params_by_name would otherwise
+    # silently keep only the last one, leaving the form/validation undefined.
+    # Fail loud at route-registration time, like the duplicate-slug check.
+    seen = set()
+    for p in params:
+        if p.name in seen:
+            raise ValueError(
+                f"Duplicate field name '{p.name}' in '{func.__name__}'. "
+                f"A Params class field collides with another parameter "
+                f"or with a field from another Params class. "
+                f"Rename one of them."
+            )
+        seen.add(p.name)
 
     return params, params_map
 

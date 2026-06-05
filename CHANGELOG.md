@@ -36,6 +36,19 @@
   server-side, so the submit never needed fresh choices). No shared mutable
   state, no locks — the same principle as the 1.5.0 globals cleanup, applied to
   the last place mutable shared state remained.
+- **Invalid `Params` setups are now rejected at startup with a clear error
+  instead of misbehaving silently** — three cases that previously slipped
+  through: a field name colliding across the flat form (a `Params` field
+  matching a function parameter or a field from another `Params` class)
+  made `params_by_name` keep only the last one, so the form rendered
+  duplicate inputs and validation/reconstruction stole values between them;
+  a nested `Params` field and an optional `Params` parameter
+  (`data: UserData | None`, both `typing.Union` and PEP 604) fell through
+  to the generic analyzer and crashed with a cryptic internal error.
+  All three now raise an explicit `ValueError` when routes are registered,
+  naming the offending field/parameter and how to fix it (rename the field;
+  flatten the nested class; make individual fields optional inside the
+  class instead). Valid code is unaffected.
 
 ### Removed
 - **`aiofiles` dependency dropped** — it was used in a single place, the chunked
