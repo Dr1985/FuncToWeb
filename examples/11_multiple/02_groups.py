@@ -9,8 +9,8 @@ def sin(x: float):
     return math.sin(x)
 
 # Groups are dicts with exactly one key (the group name) and a list as value.
-# That list can contain functions, FunctionMetadata, or more groups -- nesting
-# is allowed and group dicts can be mixed with plain functions at any level.
+# That list can contain functions or more groups -- nesting is allowed and
+# group dicts can be mixed with plain functions at any level.
 run([
     {"Math": [
         add,

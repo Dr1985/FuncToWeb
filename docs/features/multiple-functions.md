@@ -58,24 +58,6 @@ inside `{"Math": [{"Trig": [sin]}]}` at `/math/trig/sin`. Functions placed
 at the top level keep their plain `/<slug>` URL. Duplicate URLs raise a
 clear error at startup.
 
-## Custom Name & Description
-
-Use `FunctionMetadata` to override the auto-generated name and description:
-
-```python
-from func_to_web import run, FunctionMetadata
-
-def my_func(x: int): return x * 2
-
-run(FunctionMetadata(
-    function=my_func,
-    name="Double a number",
-    description="Multiplies the input by 2",
-))
-```
-
-By default, the name is derived from the function name (`my_func` → `My func`) and the description from its docstring.
-
 ## Custom App Title
 
 ```python
