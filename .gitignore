@@ -7,6 +7,9 @@ __pycache__/
 *.so
 .claude/
 
+# Private local tooling (context dumps, scratch scripts) — never pushed
+_private/
+
 # DB files
 *.db
 
