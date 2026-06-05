@@ -126,7 +126,6 @@ def run(
     returns_dir: str | Path | None = None,
     returns_lifetime: int = 3600,
     stream_prints: bool = True,
-    root_path: str = "",
     fastapi_config: dict[str, Any] | None = None,
     **uvicorn_kwargs
 ):
@@ -151,9 +150,11 @@ def run(
             "func_to_web_returned_files" folder inside the OS temp dir.
         returns_lifetime: Seconds before returned files are deleted (default: 3600).
         stream_prints: If True, print() output is streamed to the client in real time.
-        root_path: FastAPI root path for reverse proxy.
         fastapi_config: Additional FastAPI configuration.
-        **uvicorn_kwargs: Additional Uvicorn configuration.
+        **uvicorn_kwargs: Additional Uvicorn configuration. For a reverse proxy,
+            pass root_path here (e.g. root_path="/tools"); Uvicorn injects it
+            into the ASGI scope and all internal URLs adapt. Use no trailing
+            slash ("/tools", not "/tools/").
     """
     workers = uvicorn_kwargs.get("workers")
     if workers is not None and workers > 1:
@@ -172,11 +173,6 @@ def run(
             "For auto-reload, build the app with create_app() and serve it "
             "with an import string (e.g. 'uvicorn mymodule:app --reload')."
         )
-
-    # Normalize root_path once: a trailing slash (e.g. root_path="/tools/") would
-    # produce doubled-slash internal URLs like "/tools//add". ASGI convention is
-    # no trailing slash; enforce it here so the handlers don't each have to.
-    root_path = root_path.rstrip("/")
 
     uploads_dir, returns_dir = _resolve_dirs(uploads_dir, returns_dir)
 
@@ -203,13 +199,5 @@ def run(
         stream_prints=stream_prints,
         fastapi_config=fastapi_config,
     )
-
-    # Standalone reverse-proxy mode: create_app() builds with root_path=""
-    # (mounted apps get their prefix from Starlette per request). FastAPI's
-    # __call__ injects self.root_path into scope["root_path"] when set, so
-    # assigning the attribute here reproduces the previous
-    # create_fastapi_app(root_path=...) behavior exactly.
-    if root_path:
-        app.root_path = root_path
 
     start_server(app, host, port, uvicorn_kwargs)

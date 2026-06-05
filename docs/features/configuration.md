@@ -24,9 +24,8 @@ run(my_function, host="127.0.0.1", port=8000)
 | `returns_dir` | OS temp dir | Returned files directory (defaults to `<temp>/func_to_web_returned_files`) |
 | `returns_lifetime` | `3600` | Seconds before returned files are deleted |
 | `stream_prints` | `True` | Stream `print()` to browser |
-| `root_path` | `""` | URL prefix for reverse proxy |
 | `fastapi_config` | `None` | Extra FastAPI options |
-| `**uvicorn_kwargs` | — | Any Uvicorn option |
+| `**uvicorn_kwargs` | — | Any Uvicorn option (e.g. `root_path` for a reverse proxy) |
 
 Any option supported by Uvicorn or FastAPI can be passed through — `fastapi_config` for FastAPI constructor kwargs, and `**uvicorn_kwargs` for everything else.
 
@@ -47,7 +46,7 @@ run(my_function, port=5000)
 run(my_function, root_path="/tools/my-app")
 ```
 
-Set `root_path` to the prefix your proxy serves under and the whole UI works: every internal URL (styles/scripts, form submit, navigation, downloads) is derived per request from `root_path`, so nothing points at the domain root. A trailing slash is fine — it's normalized.
+`root_path` is passed straight through to Uvicorn (via `**uvicorn_kwargs`), which injects it into the ASGI scope. Set it to the prefix your proxy serves under and the whole UI works: every internal URL (styles/scripts, form submit, navigation, downloads) is derived per request from `root_path`, so nothing points at the domain root. Use no trailing slash (`/tools/my-app`, not `/tools/my-app/`) — a trailing slash produces doubled-slash internal URLs.
 
 **Embedding in a larger FastAPI app:**
 ```python
@@ -59,7 +58,7 @@ host.mount("/tools", create_app([add, multiply]))
 ```
 
 `create_app()` accepts the same configuration as `run()` except the server
-options (`host`, `port`, `root_path`, `**uvicorn_kwargs`). The mount prefix is
+options (`host`, `port`, `**uvicorn_kwargs`). The mount prefix is
 picked up per request automatically. Serving by import string also enables
 `uvicorn mymodule:app --workers 4` and `--reload`. Note that the startup
 cleanup of leftover uploads only runs in `run()` — see the changelog.

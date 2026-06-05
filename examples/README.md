@@ -36,7 +36,7 @@ Then open http://127.0.0.1:8000
 - **`10_params/`** — Reusable parameter groups via the Params class.
 - **`11_multiple/`** — Multiple functions: list, groups, custom metadata.
 - **`13_config/`** — Host/port, reverse proxy, custom CSS, and serving a static frontend.
-- **`14_recipes/`** — End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel, simple CRUD.
+- **`14_recipes/`** — End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel.
 
 ## Tip
 

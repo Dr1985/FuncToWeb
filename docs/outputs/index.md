@@ -188,5 +188,5 @@ def find_user(user_id: int):
         raise ValueError(f"User {user_id} not found")
     return db.get_user(user_id)
 
-run(divide)
+run(find_user)
 ```

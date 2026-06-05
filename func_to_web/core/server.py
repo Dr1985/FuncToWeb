@@ -3,15 +3,13 @@ from fastapi import FastAPI
 from fastapi.responses import Response
 import uvicorn
 
-from .constants import UVICORN_DEFAULTS
-
 
 def create_fastapi_app(fastapi_config: dict[str, Any] | None = None) -> FastAPI:
     """Create and configure the FastAPI app.
 
     root_path is intentionally absent: mounted apps get their per-request
-    prefix from Starlette, and run() sets app.root_path after building for
-    standalone reverse-proxy mode.
+    prefix from Starlette, and for standalone reverse-proxy mode run() passes
+    root_path through to Uvicorn, which injects it into the ASGI scope.
     """
     return FastAPI(**(fastapi_config or {}))
 
@@ -36,16 +34,12 @@ def start_server(
     port: int,
     uvicorn_kwargs: dict[str, Any]
 ) -> None:
-    """Start the Uvicorn server with merged default + user config."""
-    config = {
-        "host": host,
-        "port": port,
-        **UVICORN_DEFAULTS,
-    }
+    """Start the Uvicorn server with user-provided config.
 
-    config.update(uvicorn_kwargs)
-
-    uvicorn_config = uvicorn.Config(app, **config)
+    No deployment opinions are hardcoded: Uvicorn's own defaults apply, and any
+    tuning (limits, timeouts, workers...) is passed through via uvicorn_kwargs.
+    """
+    uvicorn_config = uvicorn.Config(app, host=host, port=port, **uvicorn_kwargs)
     server = uvicorn.Server(uvicorn_config)
 
     server.run()

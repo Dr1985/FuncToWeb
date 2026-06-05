@@ -1,6 +1,6 @@
 # 14_recipes
 
-End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel, simple CRUD.
+End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel.
 
 ## Files
 
@@ -10,4 +10,3 @@ End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image
 - `04_csv_analyzer.py`
 - `05_image_resize.py`
 - `06_admin_subprocess.py`
-- `07_simple_crud.py`

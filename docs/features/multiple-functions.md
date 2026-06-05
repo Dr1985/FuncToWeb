@@ -16,7 +16,7 @@ def celsius_to_fahrenheit(celsius: float):
 run([calculate_bmi, celsius_to_fahrenheit])
 ```
 
-If only one visible function exists, the index page is skipped and it opens directly.
+If only one function exists, the index page is skipped and it opens directly.
 
 ## Groups
 
