@@ -81,6 +81,19 @@
   `UploadFile`). At 8 MB chunks the thread-hop overhead is negligible. One fewer
   dependency, no behavior change.
 
+### Documentation
+- **Upload cleanup docs corrected** — `files.md` claimed FuncToWeb "skips cleanup
+  on files that no longer exist in the original path", describing a mechanic that
+  doesn't exist. The temporary upload folder is always removed after the function
+  finishes; `shutil.move()` works because it moves the file out of that folder
+  before deletion, not because of any skip.
+- **`Params` cross-field validation documented** — `/doc` and `api-docs.md` now
+  note that a 422 `errors` key may be a single field *or* a `Params` group whose
+  `__post_init__` rejected an otherwise field-valid combination; `params.md` adds
+  that this validation runs server-side (the error appears on submit, not while
+  typing) and a `Limitations` section spelling out the nested / optional /
+  duplicate-name cases that are rejected at startup.
+
 ## [1.5.0] - 2026-06-04
 
 This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and make FuncToWeb composable.

@@ -78,6 +78,9 @@ On failure inside the function:
 
   HTTP 422   Input validation failed (no stream).
              { success: false, errors: { "<param>": "<message>", ... } }
+             A key may be a single field or a Params group whose
+             cross-field validation (__post_init__) rejected an
+             otherwise field-valid combination.
 
   HTTP 400   Malformed request, e.g. invalid JSON in "values" (no stream).
              { success: false, error: "<message>" }

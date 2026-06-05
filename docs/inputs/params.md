@@ -86,7 +86,7 @@ class UserData(Params):
 
 ### Cross-field validation with `__post_init__`
 
-Validation that spans more than one field goes in `__post_init__`. A `ValueError` raised there surfaces in the form as a **422 validation error**:
+Validation that spans more than one field goes in `__post_init__`. A `ValueError` raised there surfaces in the form as a **422 validation error**. This validation runs on the server — the error appears on submit, not while you type:
 
 ```python
 from func_to_web import run, Params
@@ -158,3 +158,9 @@ def defaults(settings: Settings):
 
 run(defaults)
 ```
+
+## Limitations
+
+- Params cannot be nested: a `Params` field inside another `Params` class is rejected at startup
+- Params cannot be optional: `data: UserData | None` is rejected at startup — make individual fields optional inside the class instead
+- Field names must be unique across the flattened form: a `Params` field clashing with a function parameter (or a field from another `Params`) is rejected at startup

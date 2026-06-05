@@ -27,7 +27,7 @@ The intro also documents the response format:
 
 - Success responses are a Server-Sent Events stream with `start`, `print`, and `result` events.
 - The `result` event carries a JSON object with `success` and `type` (`text`, `image`, `table`, `download`, `downloads`, `multiple`, or `error`).
-- Validation errors return HTTP 422 with a JSON body listing the offending fields.
+- Validation errors return HTTP 422 with a JSON body listing the offending fields. A key may be a single field or a `Params` group whose cross-field validation (`__post_init__`) rejected an otherwise field-valid combination.
 
 ## Calling endpoints from code
 

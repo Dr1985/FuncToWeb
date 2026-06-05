@@ -136,7 +136,7 @@ run(file_size_limit, max_file_size=10 * 1024 * 1024)  # 10 MB limit
 
 ## Upload Cleanup
 
-Uploaded files land in a temporary folder inside `uploads_dir` and are deleted automatically after your function finishes. By default `uploads_dir` points to `<os-temp-dir>/func_to_web_uploads` (resolved via `tempfile.gettempdir()`), so uploads stay out of your project folder and the OS can reclaim them on its own. If you want to keep a file permanently, move it with `shutil.move()` before returning — FuncToWeb skips cleanup on files that no longer exist in the original path:
+Uploaded files land in a temporary folder inside `uploads_dir` and are deleted automatically after your function finishes. By default `uploads_dir` points to `<os-temp-dir>/func_to_web_uploads` (resolved via `tempfile.gettempdir()`), so uploads stay out of your project folder and the OS can reclaim them on its own. If you want to keep a file permanently, move the file out with `shutil.move()` before returning; the temporary upload folder is always removed after the function finishes:
 
 ```python
 import shutil
