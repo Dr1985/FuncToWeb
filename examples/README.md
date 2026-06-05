@@ -35,8 +35,8 @@ Then open http://127.0.0.1:8000
 - **`09_composition/`** — Reusable types via Annotated: shared types, layered constraints, lists+optional combos.
 - **`10_params/`** — Reusable parameter groups via the Params class.
 - **`11_multiple/`** — Multiple functions: list.
-- **`13_config/`** — Host/port, reverse proxy, custom CSS, and serving a static frontend.
-- **`14_recipes/`** — End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel.
+- **`12_config/`** — Host/port, reverse proxy, custom CSS, and serving a static frontend.
+- **`13_recipes/`** — End-to-end recipes: QR generator, PDF merger, file transfer, CSV analyzer, image resize, admin panel.
 
 ## Tip
 

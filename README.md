@@ -1,4 +1,4 @@
-# Func To Web 1.5.0
+# Func To Web
 
 [![PyPI version](https://img.shields.io/pypi/v/func-to-web.svg)](https://pypi.org/project/func-to-web/)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -178,7 +178,7 @@ reshaped, and minor releases can break things. Every breaking change is
 explicit — documented in the [CHANGELOG](CHANGELOG.md) with the reasoning and
 the migration path, never silent.
 
-If you depend on it today, **pin your version** (`func-to-web==1.5.0`) and
+If you depend on it today, **pin your version** (e.g. `func-to-web==1.5.1`) and
 read the changelog before upgrading.
 
 **The 2.0.0 commitment:** from 2.0.0 onwards, FuncToWeb adopts semantic

@@ -1,4 +1,4 @@
-# 13_config
+# 12_config
 
 Host/port, reverse proxy, custom CSS, and serving a static frontend.
 

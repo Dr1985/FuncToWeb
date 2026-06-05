@@ -95,7 +95,6 @@ def cleanup_returned_files(returns_dir: Path, returns_lifetime: int) -> int:
             try:
                 p.unlink()
                 count += 1
-                print(f"Deleted expired returned file: {p.name}")
             except OSError:
                 pass
 
