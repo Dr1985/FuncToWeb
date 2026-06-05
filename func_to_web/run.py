@@ -88,12 +88,9 @@ def create_app(
 
     app_input = normalize_input(func, app_title, css_vars, favicon)
 
-    if fastapi_config is None:
-        fastapi_config = {}
-
-    # root_path="" always: mounts get their prefix from Starlette per request;
-    # standalone proxy mode is run()'s responsibility.
-    app = create_fastapi_app("", fastapi_config)
+    # root_path is never set at build time: mounts get their prefix from
+    # Starlette per request; standalone proxy mode is run()'s responsibility.
+    app = create_fastapi_app(fastapi_config)
 
     setup_static_routes(app, static_css, static_js)
     setup_download_route(app, returns_dir, returns_lifetime)

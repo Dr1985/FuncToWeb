@@ -6,18 +6,14 @@ import uvicorn
 from .constants import UVICORN_DEFAULTS
 
 
-def create_fastapi_app(
-    root_path: str = "",
-    fastapi_config: dict[str, Any] | None = None,
-) -> FastAPI:
-    """Create and configure the FastAPI app."""
-    base_config = {"root_path": root_path}
+def create_fastapi_app(fastapi_config: dict[str, Any] | None = None) -> FastAPI:
+    """Create and configure the FastAPI app.
 
-    if fastapi_config:
-        clean_config = {k: v for k, v in fastapi_config.items() if k != "root_path"}
-        base_config.update(clean_config)
-
-    return FastAPI(**base_config)
+    root_path is intentionally absent: mounted apps get their per-request
+    prefix from Starlette, and run() sets app.root_path after building for
+    standalone reverse-proxy mode.
+    """
+    return FastAPI(**(fastapi_config or {}))
 
 
 def setup_static_routes(app: FastAPI, css: str, js: str) -> None:
@@ -47,8 +43,7 @@ def start_server(
         **UVICORN_DEFAULTS,
     }
 
-    clean_kwargs = {k: v for k, v in uvicorn_kwargs.items() if k != "root_path"}
-    config.update(clean_kwargs)
+    config.update(uvicorn_kwargs)
 
     uvicorn_config = uvicorn.Config(app, **config)
     server = uvicorn.Server(uvicorn_config)
