@@ -3,7 +3,7 @@
     if (!form) return;
 
     const action = form.dataset.action;
-    const { getOrCreateContainer, clearContainer, renderResult } = window.functoweb.result;
+    const { clearContainer, renderResult } = window.functoweb.result;
 
     window.functoweb.result.init(form.parentElement);
 

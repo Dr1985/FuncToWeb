@@ -72,6 +72,5 @@ def render_index(app_input: NormalizedInput, prefix: str = "") -> str:
         items=app_input.navigation_data,
         css_vars=app_input.css_vars,
         favicon=app_input.favicon_data_uri,
-        navigation_data=app_input.navigation_data,
         prefix=prefix,
     )
