@@ -8,14 +8,13 @@ Every FuncToWeb app exposes a plain-text, machine-readable description of all it
 curl http://127.0.0.1:8000/doc
 ```
 
-The response is plain text with two parts: a general intro explaining how to call any endpoint, and one block per registered function (visible and hidden) with its name, parameters as JSON, and a working `curl` example.
+The response is plain text with two parts: a general intro explaining how to call any endpoint, and one block per registered function with its name, parameters as JSON, and a working `curl` example.
 
 ## What's in each function block
 
 For every function you get:
 
 - The slug and URL.
-- Whether it's hidden from the web UI.
 - Its description (from the docstring).
 - Parameters as JSON: type, default, constraints, choices, list/optional flags, and `upload_info` for file fields.
 - A ready-to-run `curl` example using `<base_url>` as a placeholder.
@@ -27,7 +26,7 @@ Static dropdowns are listed as a closed set; dynamic ones (`Dropdown(func)`) are
 The intro also documents the response format:
 
 - Success responses are a Server-Sent Events stream with `start`, `print`, and `result` events.
-- The `result` event carries a JSON object with `success` and `type` (`text`, `image`, `table`, `action_table`, `download`, `downloads`, `multiple`, or `error`).
+- The `result` event carries a JSON object with `success` and `type` (`text`, `image`, `table`, `download`, `downloads`, `multiple`, or `error`).
 - Validation errors return HTTP 422 with a JSON body listing the offending fields.
 
 ## Calling endpoints from code

@@ -2,9 +2,7 @@
 {% macro render_nav_children(children) %}
     {% for child in children %}
         {% if child.type == 'function' %}
-            {% if not child.hidden %}
             <a href="{{ prefix }}{{ child.url }}" class="functoweb-nav-link">{{ child.name }}</a>
-            {% endif %}
         {% else %}
             <div class="functoweb-nav-subgroup">
                 <button class="functoweb-nav-subgroup-toggle" onclick="toggleSubgroup(this)">
@@ -29,9 +27,7 @@
     <div class="functoweb-sidebar-menu">
         {% for item in navigation_data %}
             {% if item.type == 'function' %}
-                {% if not item.hidden %}
                 <a href="{{ prefix }}{{ item.url }}" class="functoweb-nav-link">{{ item.name }}</a>
-                {% endif %}
             {% else %}
                 <div class="functoweb-nav-group">
                     <button class="functoweb-nav-group-toggle" onclick="toggleNavGroup(this)">

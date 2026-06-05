@@ -82,13 +82,13 @@ def setup_multi_items(
     stream_prints: bool,
 ) -> None:
 
-    visible = [item for item in app_input.navigation_data if item["type"] == "function" and not item.get("hidden")]
+    top_level_functions = [item for item in app_input.navigation_data if item["type"] == "function"]
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
         prefix = request.scope.get("root_path", "")
-        if len(visible) == 1:
-            return RedirectResponse(url=f"{prefix}{visible[0]['url']}")
+        if len(top_level_functions) == 1:
+            return RedirectResponse(url=f"{prefix}{top_level_functions[0]['url']}")
         return render_index(app_input, prefix=prefix)
 
     register_navigation_routes(

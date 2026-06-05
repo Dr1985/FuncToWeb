@@ -63,8 +63,6 @@ you which shape to expect:
   text          { success, type: "text",   data: "..." }
   image         { success, type: "image",  data: "data:image/png;base64,..." }
   table         { success, type: "table",  headers: [...], rows: [[...]] }
-  action_table  { success, type: "action_table", headers, rows,
-                  action: "/<slug>" }   ← treat as table from the API
   download      { success, type: "download",  file_id, filename }
                   Fetch with: GET <base_url>/download/<file_id>
                   Files expire (default 1h).
@@ -90,7 +88,6 @@ On failure inside the function:
 
 - Ignore "print" events if you only want the final result.
 - Omit optional params from "values" to send null.
-- Hidden endpoints work like visible ones; they're just not in the index.
 
 
 === Endpoints ===
@@ -124,8 +121,6 @@ def _doc_for_function(meta) -> str:
         f"\n--- /{meta.slug} ---\n"
         f"Name: {meta.name}\n"
     )
-    if meta.hidden:
-        header += "Hidden: true\n"
     if meta.description:
         header += f"Description: {meta.description}\n"
 

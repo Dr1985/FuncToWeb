@@ -1,10 +1,9 @@
 import io
 import base64
 from pathlib import Path
-from .types import FileResponse, ActionTable
+from .types import FileResponse
 from .core.return_file_handler import save_returned_file
 from .core.table import try_process_table
-from .core.utils import slugify
 
 
 def process_error(exc: Exception) -> dict:
@@ -62,17 +61,6 @@ def process_file_response_list(
     return {"type": "downloads", "files": files}
 
 
-def process_action_table(t: ActionTable) -> dict:
-    """Serialize an ActionTable into a navigable table descriptor."""
-    slug = slugify(t.action.__name__.replace("_", " "))
-    return {
-        "type": "action_table",
-        "headers": t.headers,
-        "rows": t.rows,
-        "action": f"/{slug}",
-    }
-
-
 def _is_pil_image(obj) -> bool:
     """Check if object is a PIL Image (safe if PIL not installed)."""
     try:
@@ -98,7 +86,6 @@ def _process_single(result, returns_dir: Path, returns_lifetime: int) -> dict:
     - None → "Done"
     - list/tuple → recursive
     - str → text
-    - ActionTable → action_table
     - FileResponse → download
     - PIL → image
     - matplotlib → image
@@ -113,9 +100,6 @@ def _process_single(result, returns_dir: Path, returns_lifetime: int) -> dict:
 
     if isinstance(result, str):
         return process_str(result)
-
-    if isinstance(result, ActionTable):
-        return process_action_table(result)
 
     if isinstance(result, FileResponse):
         return process_file_response(result, returns_dir, returns_lifetime)

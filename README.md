@@ -80,7 +80,6 @@ Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation �
 | `PIL Image`, `Matplotlib Figure` | Inline image | [→](docs/outputs/index.md#images) |
 | `FileResponse` | Download button | [→](docs/outputs/index.md#file-downloads) |
 | `DataFrame`, `list[dict]`, ... | Table| [→](docs/outputs/index.md#tables) |
-| `ActionTable` | Clickable rows → next function | [→](docs/outputs/index.md#actiontable) |
 | `tuple` / `list` | Multiple outputs | [→](docs/outputs/index.md#multiple-outputs) |
 | `print()` | Streamed live | [→](docs/outputs/index.md#print-output) |
 
@@ -140,7 +139,7 @@ def restart_service(service: Literal['nginx', 'gunicorn', 'celery']):
 run(restart_service)
 ```
 
-More in [`examples/`](examples/) — including a full [CRUD app in 70 lines](examples/14_recipes/07_simple_crud.py) using `Params` + `ActionTable`.
+More in [`examples/`](examples/).
 
 ## Install
 

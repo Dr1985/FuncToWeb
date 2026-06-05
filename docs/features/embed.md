@@ -38,5 +38,4 @@ The embedded form picks up the user's theme preference from `localStorage`, the 
 ## Notes
 
 - Embed mode is purely cosmetic — validation and submit behavior are unchanged.
-- Hidden functions (`HiddenFunction`) work in embed mode too. They have URLs even though they don't appear in the index.
 - File uploads, downloads and `print()` streaming all work normally inside an iframe.

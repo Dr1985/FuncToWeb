@@ -94,54 +94,6 @@
         return table;
     }
 
-    function buildActionTable(headers, rows, action) {
-        const table = document.createElement("table");
-        table.className = "functoweb-table functoweb-table-action";
-
-        const thead = document.createElement("thead");
-        const headRow = document.createElement("tr");
-        for (const h of headers) {
-            const th = document.createElement("th");
-            th.textContent = h;
-            headRow.appendChild(th);
-        }
-        thead.appendChild(headRow);
-        table.appendChild(thead);
-
-        const tbody = document.createElement("tbody");
-        rows.forEach((row, i) => {
-            const tr = document.createElement("tr");
-            tr.style.cursor = "pointer";
-            tr.dataset.rowIndex = i;
-            for (const cell of row) {
-                const td = document.createElement("td");
-                td.textContent = cell == null ? "" : cell;
-                tr.appendChild(td);
-            }
-            tbody.appendChild(tr);
-        });
-
-        tbody.addEventListener("click", (e) => {
-            const tr = e.target.closest("tr[data-row-index]");
-            if (!tr) return;
-            const row = rows[parseInt(tr.dataset.rowIndex, 10)];
-            const params = new URLSearchParams();
-            headers.forEach((h, i) => {
-                const v = row[i];
-                if (v == null) return;
-                params.set(h, v);
-            });
-            if (new URLSearchParams(location.search).get('__embed') === '1') {
-                params.set('__embed', '1');
-            }
-            window.location.href = `${PREFIX}${action}?${params}`;
-        });
-
-        table.appendChild(tbody);
-
-        return table;
-    }
-
     const SDT_JS = "https://cdnjs.cloudflare.com/ajax/libs/simple-datatables/10.0.0/simple-datatables.min.js";
     const SDT_CSS = "https://cdnjs.cloudflare.com/ajax/libs/simple-datatables/10.0.0/style.min.css";
 
@@ -313,50 +265,6 @@
             const wrapper = document.createElement("div");
             wrapper.className = "functoweb-table-wrapper";
             const table = buildTable(headers, rows);
-            wrapper.appendChild(table);
-            body.appendChild(wrapper);
-
-            const actions = document.createElement("div");
-            actions.className = "functoweb-table-actions";
-
-            const count = document.createElement("span");
-            count.className = "functoweb-table-row-count";
-            count.textContent = `${rows.length} row${rows.length !== 1 ? "s" : ""}`;
-            actions.appendChild(count);
-
-            const expandBtn = document.createElement("button");
-            expandBtn.className = "functoweb-copy-btn";
-            expandBtn.innerHTML = EXPAND_SVG;
-            expandBtn.title = "View full size";
-            expandBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openTableOverlay(headers, rows);
-            });
-            actions.appendChild(expandBtn);
-
-            const csv = tableToCsv(headers, rows);
-            actions.appendChild(makeDownloadButton(csv, "table.csv"));
-            actions.appendChild(makeCopyButton(csv));
-
-            body.appendChild(actions);
-
-            enhanceTable(table);
-
-            return body;
-        },
-
-        action_table(payload) {
-            const headers = payload.headers || [];
-            const rows = payload.rows || [];
-            const action = payload.action;
-
-            const body = document.createElement("div");
-            body.className = "functoweb-result-body functoweb-result-table";
-
-            const wrapper = document.createElement("div");
-            wrapper.className = "functoweb-table-wrapper";
-            const table = buildActionTable(headers, rows, action);
             wrapper.appendChild(table);
             body.appendChild(wrapper);
 

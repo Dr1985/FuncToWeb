@@ -14,7 +14,6 @@ class FunctionMetadata:
     name: str | None = None
     slug: str | None = None
     description: str | None = None
-    hidden: bool = False
 
     def __post_init__(self):
         if not callable(self.function):
@@ -42,10 +41,6 @@ class FunctionMetadata:
                 if self.function.__doc__
                 else ""
             )
-
-@dataclass
-class HiddenFunction(FunctionMetadata):
-    hidden: bool = True
 
 @dataclass
 class NormalizedInput:

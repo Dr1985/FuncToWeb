@@ -76,24 +76,6 @@ run(FunctionMetadata(
 
 By default, the name is derived from the function name (`my_func` → `My func`) and the description from its docstring.
 
-## Hidden Functions
-
-Use `HiddenFunction` to register a function without showing it in the index. It's still accessible via its URL — useful for two cases:
-
-- Functions only reached via `ActionTable` row navigation
-- Functions embedded as modal endpoints in an existing web app via iframe or URL prefill
-
-```python
-from func_to_web import run, HiddenFunction
-
-def list_users(): ...
-def edit_user(id: int, name: str): ...
-
-run([list_users, HiddenFunction(edit_user)])
-```
-
-`edit_user` won't appear in the index but is reachable at `/edit-user` — directly or via `ActionTable`.
-
 ## Custom App Title
 
 ```python

@@ -129,7 +129,6 @@ def build_navigation_structure(
                 "description": meta.description,
                 "url": url,
                 "path": path_prefix,
-                "hidden": meta.hidden,
             })
         else:
             subgroup_slug = item["slug"]

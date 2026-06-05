@@ -14,14 +14,14 @@ _jinja_env = Environment(
 )
 
 
-def _count_visible_items(navigation_data: list) -> int:
-    """Count visible (non-hidden) functions in the nav tree."""
+def _count_functions(navigation_data: list) -> int:
+    """Count functions in the nav tree."""
     count = 0
     for item in navigation_data or []:
-        if item["type"] == "function" and not item.get("hidden"):
+        if item["type"] == "function":
             count += 1
-        elif item["type"] != "function":
-            count += _count_visible_items(item.get("children", []))
+        else:
+            count += _count_functions(item.get("children", []))
     return count
 
 
@@ -47,9 +47,9 @@ def render_page(
         params_json=params_json,
     )
 
-    # Hide sidebar if there are fewer than 2 visible functions to navigate to
+    # Hide sidebar if there are fewer than 2 functions to navigate to
     navigation_data = app_input.navigation_data
-    if _count_visible_items(navigation_data) < 2:
+    if _count_functions(navigation_data) < 2:
         navigation_data = None
 
     return _jinja_env.get_template("page.html").render(

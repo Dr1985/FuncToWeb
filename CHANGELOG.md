@@ -37,7 +37,7 @@ This release is a big simplification pass. The goal: remove features that can be
 - **Internals are now free of module-level config state** — the upload/return directories, size limit and `stream_prints` flag are no longer mutated onto module globals (`save_file_handler.UPLOADS_DIR`, etc.); `run()` resolves them as locals and passes them down explicitly through closures. Public behaviour is unchanged, but anyone who used to monkey-patch `save_file_handler.UPLOADS_DIR` (or the other module globals) must pass the corresponding `run()` keyword instead.
 - **Default uploads and returned-files directories moved to the OS temp folder** — `uploads_dir` now defaults to `<os-temp-dir>/func_to_web_uploads` and `returns_dir` to `<os-temp-dir>/func_to_web_returned_files` (resolved via `tempfile.gettempdir()`), instead of `./uploads` and `./returned_files` in the current working directory; transient files no longer pollute the project folder and the OS reclaims them automatically. Pass an explicit `uploads_dir=...` / `returns_dir=...` to keep the previous behaviour
 - **`root_path` passed inside `fastapi_config` is now forwarded to FastAPI instead of being silently stripped** — the internal filtering existed to protect a build-time `root_path` that no longer exists (mounted apps get their prefix per request from Starlette; `run(root_path=...)` applies it after building). Note that setting it there is normally unnecessary and can double prefixes if combined with mounting or `run(root_path=...)`.
-- **Public namespace is now declared explicitly via `__all__` in `func_to_web/types.py`** — previously `from .types import *` (no `__all__`) leaked every transitive import into the package root, so `func_to_web.json`, `func_to_web.Path`, `func_to_web.BaseModel`, `func_to_web.dataclass`, `func_to_web.Any`, `func_to_web.Callable` and `func_to_web.model_validator` all existed as accidental, undocumented re-exports. These are no longer accessible from the package root (or via `from func_to_web.types import *`); import them from their real source (`json`, `pathlib`, `pydantic`) instead. The deliberate surface is unchanged: `Field`, `Annotated`, `Literal`, `date`, `time`, `Params`, `FileResponse`, `ActionTable` and all pytypeinput types (`Color`, `Email`, `File`, `Slider`, …) remain exported, and explicit imports like `from func_to_web.types import Email` are unaffected.
+- **Public namespace is now declared explicitly via `__all__` in `func_to_web/types.py`** — previously `from .types import *` (no `__all__`) leaked every transitive import into the package root, so `func_to_web.json`, `func_to_web.Path`, `func_to_web.BaseModel`, `func_to_web.dataclass`, `func_to_web.Any`, `func_to_web.Callable` and `func_to_web.model_validator` all existed as accidental, undocumented re-exports. These are no longer accessible from the package root (or via `from func_to_web.types import *`); import them from their real source (`json`, `pathlib`, `pydantic`) instead. The deliberate surface is unchanged: `Field`, `Annotated`, `Literal`, `date`, `time`, `Params`, `FileResponse` and all pytypeinput types (`Color`, `Email`, `File`, `Slider`, …) remain exported, and explicit imports like `from func_to_web.types import Email` are unaffected.
 
 ### Removed
 - Authentication (`auth`/`secret_key`). No compatibility shims remain: passing
@@ -52,9 +52,26 @@ This release is a big simplification pass. The goal: remove features that can be
   host.mount("/", StaticFiles(directory="dist", html=True))
   ```
 - **`keep_uploads` parameter** — removed from `run()`. Uploaded files were transient by design and are always cleaned up after the function finishes; persisting them is now done explicitly by moving the file out of `uploads_dir` (e.g. with `shutil.move()`) before returning
+- **`ActionTable`** — removed entirely, with no backward compatibility:
+  returning one now falls through to the generic `str()` text output, and the
+  `action_table` SSE result type no longer exists. It coupled navigation to a
+  table widget and had been marked experimental since its introduction. For
+  standalone tools, functions remain directly reachable by URL with prefill;
+  for CRUD apps with their own frontend, mount `create_app()` inside FastAPI
+  and drive forms via URL prefill + embed mode. A first-class navigable
+  output (`Link`) is planned after the API stabilizes.
+- **`HiddenFunction`** — removed, with no backward compatibility: importing it
+  now fails with an `ImportError`, and every registered function always appears
+  in the index and navigation. The flag had no audience: with `run()` you want
+  all your tools visible (the index is the UI), and when mounting via
+  `create_app()` nobody looks at that index — if you need internal endpoints
+  separated from visible tools, mount two apps
+  (`host.mount("/tools", create_app(visible))` /
+  `host.mount("/api", create_app(internal))`), which composes cleaner than a
+  per-function flag.
 
 ### Fixed
-- **Internal URLs are now prefix-aware (work under a `root_path` / when mounted)** — the HTML/JS emitted absolute, root-anchored URLs (`/submit`, `/download/<id>`, `/_functoweb/static/...`, navigation/index links, and `ActionTable` redirects). Behind a reverse proxy with a real `root_path`, or under `app.mount("/tools", ...)`, those pointed at the domain root and broke styling, form submit, navigation, downloads and `ActionTable`. URLs are now derived per request from `request.scope["root_path"]` and prepended to internal paths (templates receive a `prefix`; the frontend reads `window.__functoweb_prefix`). The SSE payload is unchanged (`action` stays `/{slug}`), as is `/doc`, the API contract and `run()`'s public signature. This also paves the way for the mountable `create_app()` added in this release.
+- **Internal URLs are now prefix-aware (work under a `root_path` / when mounted)** — the HTML/JS emitted absolute, root-anchored URLs (`/submit`, `/download/<id>`, `/_functoweb/static/...`, navigation/index links). Behind a reverse proxy with a real `root_path`, or under `app.mount("/tools", ...)`, those pointed at the domain root and broke styling, form submit, navigation and downloads. URLs are now derived per request from `request.scope["root_path"]` and prepended to internal paths (templates receive a `prefix`; the frontend reads `window.__functoweb_prefix`). The SSE payload is unchanged, as is `/doc`, the API contract and `run()`'s public signature. This also paves the way for the mountable `create_app()` added in this release.
 - **`workers` and `reload` passed to `run()` are now rejected instead of silently ignored** — `run()` hands the app *instance* to Uvicorn, and Uvicorn only spawns multiple workers, or runs its reload supervisor, when given an import string (`"module:app"`). A `workers=N` (N > 1) or `reload=True` in `**uvicorn_kwargs` therefore had no effect: callers believed they had N processes / auto-reload while actually running a single, non-reloading process. `run(func, workers=2+)` and `run(func, reload=True)` now raise an explicit `ValueError`. **Migration:** `workers=1` (or omitting it) is unchanged; for real multiprocess or auto-reload, build the app with `create_app()` (added in this release) and serve it by import string with `uvicorn`/`gunicorn` (e.g. `uvicorn mymodule:app --workers 4 --reload`).
 
 ### Internal

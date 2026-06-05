@@ -12,14 +12,14 @@ description = "Transform any Python function into a web interface automatically"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "pytypeinput==1.0.2",
-    "pytypeinputweb==1.0.3",
-    "fastapi",
-    "uvicorn",
-    "jinja2",
-    "python-multipart",
-    "aiofiles",
-    "starlette<1.0.0",
+    "pytypeinput==1.0.2",     # type system: input types (Color, Email, File...) + validation from type hints
+    "pytypeinputweb==1.0.3",  # frontend assets: the pti-form web component, CSS/JS bundles and CSS variables
+    "fastapi",                # web framework: builds the app, routes and request handling
+    "uvicorn",                # ASGI server that run() uses to serve the app
+    "jinja2",                 # renders the HTML templates (templates/*.html)
+    "python-multipart",       # lets FastAPI parse multipart/form-data (form submits and file uploads)
+    "aiofiles",               # async file writes when saving uploaded files
+    "starlette<1.0.0",        # FastAPI's ASGI toolkit, used directly for UploadFile; pinned <1.0.0 for compatibility
 ]
 
 [project.urls]

@@ -29,5 +29,3 @@ webbrowser.open("http://127.0.0.1:8000/analyze?threshold=0.8&mode=strict")
 ## How It Works
 
 Prefill works for all scalar types (`str`, `int`, `float`, `bool`, `date`, `time`). File inputs cannot be prefilled via URL. Optional fields are enabled automatically when a value is provided.
-
-This is the same mechanism `ActionTable` uses internally — clicking a row navigates to the destination function's URL with the row data as query params.
