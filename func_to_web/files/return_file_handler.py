@@ -1,3 +1,4 @@
+import shutil
 import time
 import uuid
 from pathlib import Path
@@ -36,18 +37,19 @@ def save_returned_file(
     """
     maybe_cleanup(returns_dir, returns_lifetime)
 
-    if file_response.path is not None:
-        data = Path(file_response.path).read_bytes()
-    else:
-        data = file_response.data
-
     file_id = uuid.uuid4().hex
     timestamp = int(time.time())
     encoded = _encode_filename(file_id, timestamp, file_response.filename)
     file_path = returns_dir / encoded
 
     returns_dir.mkdir(parents=True, exist_ok=True)
-    file_path.write_bytes(data)
+
+    if file_response.path is not None:
+        # Stream-copy so large files never load fully into RAM.
+        with open(file_response.path, "rb") as src, open(file_path, "wb") as dst:
+            shutil.copyfileobj(src, dst, length=8 * 1024 * 1024)
+    else:
+        file_path.write_bytes(file_response.data)
 
     return file_id, str(file_path)
 

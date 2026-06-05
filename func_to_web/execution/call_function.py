@@ -47,9 +47,14 @@ async def call_function(
                         _run_sync_with_capture, meta.function, cap, validated
                     )
 
+                # Serialize off the event loop: writing returned files and
+                # encoding PIL/matplotlib images is heavy CPU/IO and would
+                # otherwise block the server for every output type.
                 result_holder["data"] = {
                     "success": True,
-                    **process_result(result, returns_dir, returns_lifetime),
+                    **await asyncio.to_thread(
+                        process_result, result, returns_dir, returns_lifetime
+                    ),
                 }
             except Exception as exc:
                 result_holder["data"] = {

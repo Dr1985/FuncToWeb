@@ -109,22 +109,31 @@ def create_handlers(
     already are.
     """
     # Analyze once; Params subclasses are expanded into individual fields.
-    params, params_map = _analyze(meta.function)
+    # `base_params` is an immutable template shared across requests — never mutate
+    # it. Renders build their own fresh copy via `fresh_params()` (so concurrent
+    # renders never race on shared mutable state); submits read the template
+    # directly since they only need static constraints. Same principle as the
+    # 1.5.0 globals cleanup, applied to the last shared mutable bit.
+    base_params, params_map = _analyze(meta.function)
 
-    def refresh_params():
-        """Refresh dynamic parameter choices."""
-        for i in range(len(params)):
-            params[i] = params[i].refresh_choices()
+    def fresh_params() -> list[ParamMetadata]:
+        """Build a per-request param list with dynamic choices refreshed."""
+        return [p.refresh_choices() for p in base_params]
 
     async def page_handler(request: Request):
         """Render the function page."""
-        refresh_params()
+        params = fresh_params()
         prefix = request.scope.get("root_path", "")
         embed = request.query_params.get("__embed") == "1"
         return render_page(params, meta, app_input, base_url=base_url, prefix=prefix, embed=embed)
 
     async def submit_handler(request: Request):
         """Validate input, save files, and execute the function."""
+        # Read the immutable template directly: submit only reads params (static
+        # constraints/choices live in base_params), and Dropdown(func) options
+        # aren't validated server-side — so refreshing here would just re-run each
+        # dynamic dropdown's option function per submit for nothing.
+        params = base_params
         saved_paths: list[str] = []
 
         try:

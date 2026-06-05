@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.5.1] - 2026-06-05
+
+### Fixed
+- **The package no longer ships unrelated top-level folders** — `setuptools` was
+  discovering every directory that looked like a package, so `pip install
+  func-to-web` dropped `_private/`, `docs/` and `examples/` into the user's
+  `site-packages` as global top-level packages (visible in the old
+  `top_level.txt`). Packaging is now scoped with `include = ["func_to_web*"]` in
+  `[tool.setuptools.packages.find]`, so only `func_to_web` is installed.
+- **Returned files are now stream-copied instead of being read fully into RAM** —
+  `save_returned_file` used `Path(...).read_bytes()` + `write_bytes()` for the
+  `FileResponse(path=...)` case, loading the entire file into memory just to
+  rewrite it (a 2 GB return meant 2 GB of RAM), which defeated the whole point of
+  passing `path=`. It now copies in 8 MB chunks via `shutil.copyfileobj`. The
+  in-memory `data=` branch is unchanged.
+- **Result serialization no longer blocks the event loop** — the function's
+  return value was serialized (writing returned files, base64-encoding
+  PIL/matplotlib PNGs, building tables) directly inside the running coroutine.
+  For `async` functions this always ran on the event loop; for `sync` functions
+  the `to_thread` wrapper only covered the call itself, not the serialization.
+  A large output froze the server for every connected user. `process_result` now
+  runs via `asyncio.to_thread`, moving all heavy CPU/IO off the loop regardless
+  of whether the user's function is sync or async.
+- **The per-function param list is no longer mutated concurrently** —
+  `create_handlers` analyzed the function once into a single `params` list that
+  was captured by the `page_handler`/`submit_handler` closures and shared across
+  every request. `page_handler` rewrote it in place on each render
+  (`refresh_params`), so two concurrent requests — e.g. a slow `Dropdown(func)`
+  refresh racing another render, or a render racing a submit's validation — could
+  serialize or validate against a half-refreshed list. The shared list is now an
+  immutable template (`base_params`); each page render builds its own refreshed
+  copy (`[p.refresh_choices() for p in base_params]`), and submit validation
+  reads the template directly (dynamic dropdown options aren't validated
+  server-side, so the submit never needed fresh choices). No shared mutable
+  state, no locks — the same principle as the 1.5.0 globals cleanup, applied to
+  the last place mutable shared state remained.
+
 ## [1.5.0] - 2026-06-04
 
 This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and make FuncToWeb composable.

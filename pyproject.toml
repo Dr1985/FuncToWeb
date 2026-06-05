@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "func-to-web"
-version = "1.5.0"
+version = "1.5.1"
 authors = [
     {name = "Beltrán Offerrall"}
 ]
@@ -28,6 +28,7 @@ Repository = "https://github.com/offerrall/FuncToWeb"
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["func_to_web*"]
 
 [tool.setuptools.package-data]
 func_to_web = [
