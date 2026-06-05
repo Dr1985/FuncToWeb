@@ -38,13 +38,14 @@ def create_app(
     func: Callable[..., Any] | FunctionMetadata | list,
     app_title: str | None = None,
     css_vars: dict[str, str] | None = None,
-    favicon: str | Path | None = None,
     uploads_dir: str | Path | None = None,
     max_file_size: int | None = None,
     returns_dir: str | Path | None = None,
     returns_lifetime: int = 3600,
     stream_prints: bool = True,
     fastapi_config: dict[str, Any] | None = None,
+    *,
+    _favicon: str | Path | None = None,  # private: run() passes it; not a public option (a mounted app's tab icon is the host's)
 ) -> FastAPI:
     """Build the FuncToWeb FastAPI application without starting a server.
 
@@ -86,7 +87,7 @@ def create_app(
 
     uploads_dir, returns_dir = _resolve_dirs(uploads_dir, returns_dir)
 
-    app_input = normalize_input(func, app_title, css_vars, favicon)
+    app_input = normalize_input(func, app_title, css_vars, _favicon)
 
     # root_path is never set at build time: mounts get their prefix from
     # Starlette per request; standalone proxy mode is run()'s responsibility.
@@ -191,7 +192,7 @@ def run(
         func,
         app_title=app_title,
         css_vars=css_vars,
-        favicon=favicon,
+        _favicon=favicon,
         uploads_dir=uploads_dir,
         max_file_size=max_file_size,
         returns_dir=returns_dir,

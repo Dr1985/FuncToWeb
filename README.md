@@ -35,7 +35,7 @@ run(divide)
 
 Open `http://127.0.0.1:8000`. Done.
 
-## Or mount it inside your FastAPI app
+## Mount it inside your FastAPI app
 
 ```python
 from fastapi import FastAPI
@@ -52,9 +52,27 @@ host.mount("/tools", create_app(add))
 uvicorn app:host
 ```
 
-Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation — everything works under the prefix, zero configuration.
+Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads — everything works under the prefix, zero configuration. Serving by import string also unlocks `--workers` and `--reload`.
 
-**Full docs with examples and screenshots:** [`docs/`](docs/index.md) — one page per feature, browsable right here on GitHub.
+## A function is a feature of your site
+
+Mounted, every function is also an embeddable form. Write the function:
+
+```python
+def edit_user(id: int, name: str, email: Email):
+    db.update(id, name, email)
+    return "Updated"
+```
+
+Embed it, prefilled, from any page of your site:
+
+```html
+<iframe src="/tools/edit-user?__embed=1&id=42&name=Alice"></iframe>
+```
+
+That iframe is the complete feature: the form is generated from the type hints, rendered fresh on each open (live `Dropdown(func)` choices included), validated server-side on `/submit` — the form is a view, the endpoint is what validates. No form code in your frontend, no schema duplication. An embedded form document is a few kB; the shared CSS/JS bundle is cacheable.
+
+To call functions without UI, every endpoint is a plain `POST /<slug>/submit` returning an SSE stream — the full protocol is documented at `/doc`, readable by scripts and AI agents.
 
 ## Inputs
 
@@ -91,6 +109,8 @@ Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation �
 - **Embed mode** — drop any form into your site via `?__embed=1` — [docs](docs/features/embed.md)
 - **Auto-generated API docs** at `/doc` for scripts and AI agents — [docs](docs/features/api-docs.md)
 - **Server config** — host, port, reverse proxy — [docs](docs/features/configuration.md)
+
+**Full docs with examples and screenshots:** [`docs/`](docs/index.md) — one page per feature, browsable right here on GitHub.
 
 ## Examples
 
@@ -158,7 +178,7 @@ reshaped, and minor releases can break things. Every breaking change is
 explicit — documented in the [CHANGELOG](CHANGELOG.md) with the reasoning and
 the migration path, never silent.
 
-If you depend on it today, **pin your version** (`func-to-web==1.0.1`) and
+If you depend on it today, **pin your version** (`func-to-web==1.5.0`) and
 read the changelog before upgrading.
 
 **The 2.0.0 commitment:** from 2.0.0 onwards, FuncToWeb adopts semantic
