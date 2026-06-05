@@ -90,7 +90,6 @@ Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation �
 - **URL prefill** — open forms with values from query params — [docs](docs/features/url-prefill.md)
 - **Embed mode** — drop any form into your site via `?__embed=1` — [docs](docs/features/embed.md)
 - **Auto-generated API docs** at `/doc` for scripts and AI agents — [docs](docs/features/api-docs.md)
-- **Dark mode** — [docs](docs/features/dark-mode.md)
 - **Server config** — host, port, reverse proxy — [docs](docs/features/configuration.md)
 
 ## Examples
