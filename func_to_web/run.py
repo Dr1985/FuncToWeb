@@ -4,13 +4,13 @@ from typing import Any, Callable
 
 from fastapi import FastAPI
 
-from .core import save_file_handler, return_file_handler
-from .core.server import create_fastapi_app, start_server, setup_static_routes
-from .core.normalization import normalize_input
-from .core.utils import build_static_assets
+from .files import save_file_handler, return_file_handler
+from .serving.server import create_fastapi_app, start_server, setup_static_routes
+from .normalization import normalize_input
+from .utils import build_static_assets
 
 from .models import FunctionMetadata
-from .routes import setup_multi_items, setup_single_function, setup_download_route, setup_doc_route
+from .serving.routes import setup_multi_items, setup_single_function, setup_download_route, setup_doc_route
 
 
 def _resolve_dirs(

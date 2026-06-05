@@ -1,7 +1,7 @@
 from typing import Callable, Any
 from dataclasses import dataclass
 
-from .core.utils import slugify, validate_slug
+from .utils import slugify, validate_slug
 
 
 @dataclass

@@ -10,11 +10,11 @@ from pytypeinput import ParamMetadata
 from pytypeinput.analyzer import analyze_type
 from pytypeinput.validate import validate_value
 
-from .builder import render_page
-from .models import FunctionMetadata, NormalizedInput
-from .types import Params
-from .core.save_file_handler import save_uploaded_file, cleanup_uploaded_file
-from .call_function import call_function
+from ..rendering.builder import render_page
+from ..models import FunctionMetadata, NormalizedInput
+from ..types import Params
+from ..files.save_file_handler import save_uploaded_file, cleanup_uploaded_file
+from ..execution.call_function import call_function
 
 
 def _reconstruct(params_class, model_data: dict):

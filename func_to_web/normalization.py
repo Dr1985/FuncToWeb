@@ -1,7 +1,7 @@
 from typing import Any, Callable
 from pathlib import Path
 
-from ..models import FunctionMetadata, NormalizedInput
+from .models import FunctionMetadata, NormalizedInput
 from .utils import encode_favicon_to_base64, validate_css_vars
 
 

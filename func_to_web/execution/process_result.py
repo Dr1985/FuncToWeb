@@ -1,9 +1,9 @@
 import io
 import base64
 from pathlib import Path
-from .types import FileResponse
-from .core.return_file_handler import save_returned_file
-from .core.table import try_process_table
+from ..types import FileResponse
+from ..files.return_file_handler import save_returned_file
+from .table import try_process_table
 
 
 def process_error(exc: Exception) -> dict:

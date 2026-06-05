@@ -1,6 +1,6 @@
 import json
 
-from ..route_handlers import _analyze
+from ..serving.route_handlers import _analyze
 
 
 _INTRO = """=== FuncToWeb API ===

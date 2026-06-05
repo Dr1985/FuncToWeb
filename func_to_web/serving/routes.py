@@ -5,10 +5,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse as FastAPIFileResponse, JSONResponse
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
-from .builder import render_index
-from .models import FunctionMetadata, NormalizedInput
-from .core.docs import build_doc
-from .core.return_file_handler import get_returned_file, maybe_cleanup
+from ..rendering.builder import render_index
+from ..models import FunctionMetadata, NormalizedInput
+from ..rendering.docs import build_doc
+from ..files.return_file_handler import get_returned_file, maybe_cleanup
 from .route_handlers import create_handlers
 
 

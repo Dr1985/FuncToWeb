@@ -3,8 +3,8 @@ import json
 from jinja2 import Environment, FileSystemLoader
 from pytypeinput import ParamMetadata
 
-from .core.constants import TEMPLATES_DIR
-from .models import NormalizedInput, FunctionMetadata
+from ..constants import TEMPLATES_DIR
+from ..models import NormalizedInput, FunctionMetadata
 
 
 # Shared Jinja environment (templates are static → no auto reload)

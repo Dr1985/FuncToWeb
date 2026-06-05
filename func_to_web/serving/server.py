@@ -7,11 +7,22 @@ import uvicorn
 def create_fastapi_app(fastapi_config: dict[str, Any] | None = None) -> FastAPI:
     """Create and configure the FastAPI app.
 
+    FastAPI's auto-generated Swagger UI (`/docs`), ReDoc (`/redoc`) and
+    `/openapi.json` are off by default: the functions are exposed by name,
+    not as typed OpenAPI operations, so that schema would misdescribe them —
+    `/doc` is the honest, machine-readable description. Re-enable any of them
+    via `fastapi_config` (e.g. `{"docs_url": "/docs"}`).
+
     root_path is intentionally absent: mounted apps get their per-request
     prefix from Starlette, and for standalone reverse-proxy mode run() passes
     root_path through to Uvicorn, which injects it into the ASGI scope.
     """
-    return FastAPI(**(fastapi_config or {}))
+    return FastAPI(**{
+        "docs_url": None,
+        "redoc_url": None,
+        "openapi_url": None,
+        **(fastapi_config or {}),
+    })
 
 
 def setup_static_routes(app: FastAPI, css: str, js: str) -> None:
