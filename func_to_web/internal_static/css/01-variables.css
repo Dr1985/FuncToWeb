@@ -1,22 +1,6 @@
 :root {
     --functoweb-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    
-    /* ===== SIDEBAR ===== */
-    --functoweb-sidebar-min-width: 300px;
-    --functoweb-sidebar-max-width: 320px;
-    --functoweb-sidebar-padding: 1.25rem;
-    --functoweb-sidebar-gap: 0.375rem;
-    --functoweb-sidebar-header-height: 4rem;
-    --functoweb-sidebar-border-width: 2px;
-    
-    /* ===== SIDEBAR MOBILE ===== */
-    --functoweb-sidebar-mobile-toggle-size: 2.75rem;
-    --functoweb-sidebar-mobile-toggle-top: 0.5rem;
-    --functoweb-sidebar-mobile-toggle-left: 0.5rem;
-    --functoweb-sidebar-mobile-toggle-border-radius: 8px;
-    --functoweb-sidebar-mobile-toggle-gap: 0.375rem;
-    --functoweb-sidebar-mobile-toggle-padding: 0.5rem;
-    
+
     /* ===== CONTAINER ===== */
     --functoweb-container-max-width: 600px;
     --functoweb-container-padding: 2rem;
@@ -60,10 +44,7 @@
     --functoweb-theme-toggle-hover-scale: 1.08;
     --functoweb-theme-toggle-stroke-width: 2;
     
-    /* ===== NAV ITEMS ===== */
-    --functoweb-nav-link-padding: 0.75rem 1rem;
-    --functoweb-nav-link-font-size: 0.9375rem;
-    --functoweb-nav-link-font-weight: 500;
+    /* ===== SHARED ===== */
     --functoweb-nav-link-border-radius: 8px;
 
     /* ===== ITEMS (INDEX) ===== */
@@ -110,7 +91,6 @@
     --functoweb-bg-light: #f3f4f6;
     --functoweb-nav-link-hover-bg-light: #f3f4f6;
     --functoweb-nav-link-active-bg-light: #e5e7eb;
-    --functoweb-sidebar-bg-light: #ffffff;
     --functoweb-overlay-bg-light: rgba(0, 0, 0, 0.5);
     
     /* ===== COLORS - DARK ===== */
@@ -123,7 +103,6 @@
     --functoweb-bg-dark: #1a1a1a;
     --functoweb-nav-link-hover-bg-dark: #2a2a2a;
     --functoweb-nav-link-active-bg-dark: #374151;
-    --functoweb-sidebar-bg-dark: #111111;
     --functoweb-overlay-bg-dark: rgba(0, 0, 0, 0.7);
     
     /* ===== ACTIVE COLORS ===== */
@@ -136,7 +115,6 @@
     --functoweb-bg: var(--functoweb-bg-light);
     --functoweb-nav-link-hover-bg: var(--functoweb-nav-link-hover-bg-light);
     --functoweb-nav-link-active-bg: var(--functoweb-nav-link-active-bg-light);
-    --functoweb-sidebar-bg: var(--functoweb-sidebar-bg-light);
     --functoweb-overlay-bg: var(--functoweb-overlay-bg-light);
     --functoweb-container-shadow: var(--functoweb-container-shadow-light);
     --functoweb-surface-bg: var(--functoweb-surface-bg-light);
@@ -159,7 +137,6 @@
         --functoweb-bg: var(--functoweb-bg-dark);
         --functoweb-nav-link-hover-bg: var(--functoweb-nav-link-hover-bg-dark);
         --functoweb-nav-link-active-bg: var(--functoweb-nav-link-active-bg-dark);
-        --functoweb-sidebar-bg: var(--functoweb-sidebar-bg-dark);
         --functoweb-overlay-bg: var(--functoweb-overlay-bg-dark);
         --functoweb-container-shadow: var(--functoweb-container-shadow-dark);
         --functoweb-surface-bg: var(--functoweb-surface-bg-dark);
@@ -183,7 +160,6 @@
     --functoweb-bg: var(--functoweb-bg-light);
     --functoweb-nav-link-hover-bg: var(--functoweb-nav-link-hover-bg-light);
     --functoweb-nav-link-active-bg: var(--functoweb-nav-link-active-bg-light);
-    --functoweb-sidebar-bg: var(--functoweb-sidebar-bg-light);
     --functoweb-overlay-bg: var(--functoweb-overlay-bg-light);
     --functoweb-container-shadow: var(--functoweb-container-shadow-light);
     --functoweb-surface-bg: var(--functoweb-surface-bg-light);
@@ -206,7 +182,6 @@
     --functoweb-bg: var(--functoweb-bg-dark);
     --functoweb-nav-link-hover-bg: var(--functoweb-nav-link-hover-bg-dark);
     --functoweb-nav-link-active-bg: var(--functoweb-nav-link-active-bg-dark);
-    --functoweb-sidebar-bg: var(--functoweb-sidebar-bg-dark);
     --functoweb-overlay-bg: var(--functoweb-overlay-bg-dark);
     --functoweb-container-shadow: var(--functoweb-container-shadow-dark);
     --functoweb-surface-bg: var(--functoweb-surface-bg-dark);

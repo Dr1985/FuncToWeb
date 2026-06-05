@@ -1,6 +1,6 @@
 # Multiple Functions
 
-Pass a list of functions to create an index page with navigation:
+Pass a list of functions to create an index page listing all of them:
 
 ```python
 from func_to_web import run
@@ -18,8 +18,8 @@ run([calculate_bmi, celsius_to_fahrenheit])
 
 If only one function exists, the index page is skipped and it opens directly.
 
-Each function is reachable at its own `/<slug>` URL. Duplicate URLs raise a
-clear error at startup.
+Each function is reachable at its own `/<slug>` URL and shows a "back to index"
+button to return to the listing. Duplicate URLs raise a clear error at startup.
 
 ## Custom App Title
 

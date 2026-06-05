@@ -24,7 +24,7 @@ Type hints → Web UI. One page per feature. Start from the
 ## Features
 
 - [Configuration](features/configuration.md) — host, port, reverse proxy, `create_app()`
-- [Multiple functions](features/multiple-functions.md) — index page with navigation
+- [Multiple functions](features/multiple-functions.md) — index page listing your functions
 - [URL prefill](features/url-prefill.md) — open forms with values from query params
 - [API docs for AI](features/api-docs.md) — auto-generated `/doc` for scripts and agents
 - [Embed mode](features/embed.md) — drop forms into existing sites via iframe

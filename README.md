@@ -86,7 +86,7 @@ Open `http://127.0.0.1:8000/tools/`. Forms, validation, downloads, navigation �
 ## Features
 
 - **`create_app()`** — get a mountable FastAPI app, serve by import string (workers, reload) — [docs](docs/features/configuration.md)
-- **Multiple functions** with index page and navigation — [docs](docs/features/multiple-functions.md)
+- **Multiple functions** with an index page — [docs](docs/features/multiple-functions.md)
 - **URL prefill** — open forms with values from query params — [docs](docs/features/url-prefill.md)
 - **Embed mode** — drop any form into your site via `?__embed=1` — [docs](docs/features/embed.md)
 - **Auto-generated API docs** at `/doc` for scripts and AI agents — [docs](docs/features/api-docs.md)
@@ -158,7 +158,7 @@ reshaped, and minor releases can break things. Every breaking change is
 explicit — documented in the [CHANGELOG](CHANGELOG.md) with the reasoning and
 the migration path, never silent.
 
-If you depend on it today, **pin your version** (`func-to-web==1.5.0`) and
+If you depend on it today, **pin your version** (`func-to-web==1.0.1`) and
 read the changelog before upgrading.
 
 **The 2.0.0 commitment:** from 2.0.0 onwards, FuncToWeb adopts semantic

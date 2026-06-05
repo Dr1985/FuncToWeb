@@ -1,7 +1,6 @@
 from pathlib import Path
 import base64
 import re
-from typing import Any
 
 from pytypeinputweb import list_css_variables as _pti_css_variables
 from pytypeinputweb import get_css, get_js
@@ -75,13 +74,6 @@ def validate_slug(slug: str) -> None:
             f"Invalid slug '{slug}'. "
             f"Slug must contain only lowercase letters, digits, underscores, and hyphens."
         )
-
-
-def detect_input_type(func_input: Any) -> str:
-    """Detect if input is 'single' or 'multiple'."""
-    if isinstance(func_input, list):
-        return "multiple"
-    return "single"
 
 
 def list_css_variables() -> list[str]:

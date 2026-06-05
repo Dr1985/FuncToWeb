@@ -23,11 +23,7 @@
 <body>
     {% include 'theme-toggle.html' %}
     
-    {% block navigation %}
-        {% if navigation_data %}
-        {% include 'navigation.html' %}
-        {% endif %}
-    {% endblock %}
+    {% block navigation %}{% endblock %}
     
     {% block content %}{% endblock %}
     

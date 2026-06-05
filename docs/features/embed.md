@@ -1,6 +1,6 @@
 # Embed Mode
 
-Append `?__embed=1` to any function URL to render it without sidebar, theme toggle or outer chrome, with a transparent background. Drop the URL in an `<iframe>` and the form blends into the parent site.
+Append `?__embed=1` to any function URL to render it without the back button, theme toggle or outer chrome, with a transparent background. Drop the URL in an `<iframe>` and the form blends into the parent site.
 
 ## Basic Usage
 
@@ -14,7 +14,7 @@ That's it. No server-side configuration, no separate route. Every function URL a
 
 In embed mode the page strips:
 
-- The sidebar with the function navigation.
+- The "back to index" button (multi-function mode).
 - The dark/light theme toggle.
 - The outer container's max-width, padding, shadow and border.
 - The page background (becomes transparent).

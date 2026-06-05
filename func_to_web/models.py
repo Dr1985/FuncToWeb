@@ -46,31 +46,18 @@ class FunctionMetadata:
 class NormalizedInput:
     """Normalized internal input for `run()` / `create_app()`.
 
-    Exactly one of `single_function` or `items` must be set.
-    `navigation_data` is always derived.
+    Exactly one of `single_function` or `items` (a list of FunctionMetadata)
+    must be set. `items` is the single source of truth for multi-function mode:
+    each function's URL is `/<slug>`.
     """
     single_function: FunctionMetadata | None
     items: list | None
     title: str
     css_vars: dict[str, str] | None
     favicon_data_uri: str | None
-    navigation_data: list[dict] | None = None
 
     def __post_init__(self):
-        from .core.normalization import build_navigation_structure
-
-        if self.navigation_data is not None:
-            raise ValueError(
-                "navigation_data is auto-generated and should not be provided manually."
-            )
-
         if sum(x is not None for x in [self.single_function, self.items]) != 1:
             raise ValueError(
                 "Exactly one of single_function or items must be provided."
             )
-
-        self.navigation_data = (
-            None
-            if self.single_function
-            else build_navigation_structure(self.items)
-        )

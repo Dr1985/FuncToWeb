@@ -7,10 +7,31 @@ body {
     box-sizing: border-box;
 }
 
-body.has-sidebar {
-    display: flex;
+.functoweb-back-btn {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--functoweb-surface-bg);
+    color: var(--functoweb-description-color);
+    border: 1px solid var(--functoweb-surface-border);
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body:not(.has-sidebar) .functoweb-main {
-    margin-left: 0;
+.functoweb-back-btn:hover {
+    background: var(--functoweb-nav-link-hover-bg);
+    color: var(--functoweb-title-color);
+}
+
+.functoweb-back-btn-icon {
+    font-size: 1.1rem;
+    line-height: 1;
 }

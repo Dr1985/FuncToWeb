@@ -40,6 +40,7 @@ This release is a big simplification pass. The goal: remove features that can be
 - **Public namespace is now declared explicitly via `__all__` in `func_to_web/types.py`** — previously `from .types import *` (no `__all__`) leaked every transitive import into the package root, so `func_to_web.json`, `func_to_web.Path`, `func_to_web.BaseModel`, `func_to_web.dataclass`, `func_to_web.Any`, `func_to_web.Callable` and `func_to_web.model_validator` all existed as accidental, undocumented re-exports. These are no longer accessible from the package root (or via `from func_to_web.types import *`); import them from their real source (`json`, `pathlib`, `pydantic`) instead. The deliberate surface is unchanged: `Field`, `Annotated`, `Literal`, `date`, `time`, `Params`, `FileResponse` and all pytypeinput types (`Color`, `Email`, `File`, `Slider`, …) remain exported, and explicit imports like `from func_to_web.types import Email` are unaffected.
 - **Hardcoded Uvicorn deployment defaults removed**
 - **`root_path` parameter removed from `run()`'s signature** — now passed through to Uvicorn via `**uvicorn_kwargs`, which injects it into the ASGI scope. `run(func, root_path="/tools")` works exactly as before (no trailing slash; the previous auto-normalization is gone).
+- **Sidebar navigation replaced by a "back to index" button** — multi-function pages no longer render the left sidebar listing every function (and its mobile toggle/overlay). Each function page now shows only a small back button that returns to the index, which remains the single place that lists all functions. Simpler chrome, less code (the whole sidebar template, its JS and CSS are gone). Single-function apps are unchanged (no index, no button).
 
 ### Removed
 - Authentication (`auth`/`secret_key`). No compatibility shims remain: passing
@@ -84,7 +85,7 @@ This release is a big simplification pass. The goal: remove features that can be
 
 ### Internal
 No observable behaviour change; dead-code and vestigial cleanup.
-- **Removed a dead `navigation_data` kwarg from `render_index()`** — the index template overrides `{% block navigation %}` with an empty block, so the navigation partial (the only consumer of `navigation_data`) is never rendered on the index page. The kwarg fed a block that doesn't exist and duplicated the value already passed as `items`. `render_multi()` still uses `navigation_data` and is untouched.
+- **`FunctionMetadata` is now the single source of truth for multi-function apps** — the parallel `navigation_data` list of `{name, slug, description, url}` dicts (built by `build_navigation_structure()` and stored on `NormalizedInput`) duplicated the `FunctionMetadata` objects already in `items`, since every URL is just `/<slug>`. It's gone: templates, the index redirect and route registration read `items` directly, slug-uniqueness is validated in `normalize_items()`, and the now-trivial helpers `build_navigation_structure()`, `register_navigation_routes()` and `detect_input_type()` were removed (the last two inlined). No behaviour change.
 - **Removed a dead destructure binding in `zz-form.js`** — `getOrCreateContainer` was pulled out of `window.functoweb.result` but never used (only `clearContainer` and `renderResult` are); it stays exported by `result-renderer.js`, which uses it internally.
 
 ## [1.0.2] - 2026-05-02

@@ -38,28 +38,6 @@ def register_function_routes(
     app.post(f"{url}/submit")(submit_handler)
 
 
-def register_navigation_routes(
-    app: FastAPI,
-    nav_items: list,
-    app_input: NormalizedInput,
-    *,
-    uploads_dir: Path,
-    max_file_size: int | None,
-    returns_dir: Path,
-    returns_lifetime: int,
-    stream_prints: bool,
-) -> None:
-    """Register routes for all navigation items."""
-    for item in nav_items:
-        meta = next((m for m in app_input.items if m.slug == item["slug"]), None)
-        if meta:
-            register_function_routes(
-                app, meta, app_input, item["url"],
-                uploads_dir=uploads_dir, max_file_size=max_file_size,
-                returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
-            )
-
-
 def setup_multi_items(
     app: FastAPI,
     app_input: NormalizedInput,
@@ -70,19 +48,21 @@ def setup_multi_items(
     returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
+    """Set up routes for multi-function mode: an index plus one route per function."""
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
         prefix = request.scope.get("root_path", "")
-        if len(app_input.navigation_data) == 1:
-            return RedirectResponse(url=f"{prefix}{app_input.navigation_data[0]['url']}")
+        if len(app_input.items) == 1:
+            return RedirectResponse(url=f"{prefix}/{app_input.items[0].slug}")
         return render_index(app_input, prefix=prefix)
 
-    register_navigation_routes(
-        app, app_input.navigation_data, app_input,
-        uploads_dir=uploads_dir, max_file_size=max_file_size,
-        returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
-    )
+    for meta in app_input.items:
+        register_function_routes(
+            app, meta, app_input, f"/{meta.slug}",
+            uploads_dir=uploads_dir, max_file_size=max_file_size,
+            returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
+        )
 
 
 def setup_single_function(

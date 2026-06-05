@@ -9,7 +9,7 @@
 
     <div class="functoweb-items">
         {% for item in items %}
-        <a href="{{ prefix }}{{ item.url }}" class="functoweb-function-card">
+        <a href="{{ prefix }}/{{ item.slug }}" class="functoweb-function-card">
             <h3 class="functoweb-function-card-title">{{ item.name }}</h3>
             {% if item.description %}
             <p class="functoweb-function-card-description">{{ item.description }}</p>

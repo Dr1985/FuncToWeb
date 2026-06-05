@@ -13,9 +13,6 @@
 
     function applyEmbed() {
         document.querySelector('.theme-toggle')?.remove();
-        document.querySelector('.functoweb-sidebar')?.remove();
-        document.querySelector('.functoweb-sidebar-mobile-toggle')?.remove();
-        document.querySelector('.functoweb-sidebar-overlay')?.remove();
 
         document.documentElement.style.setProperty('background', 'transparent', 'important');
         document.body.style.setProperty('background', 'transparent', 'important');

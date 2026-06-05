@@ -120,7 +120,8 @@ def create_handlers(
         """Render the function page."""
         refresh_params()
         prefix = request.scope.get("root_path", "")
-        return render_page(params, meta, app_input, base_url=base_url, prefix=prefix)
+        embed = request.query_params.get("__embed") == "1"
+        return render_page(params, meta, app_input, base_url=base_url, prefix=prefix, embed=embed)
 
     async def submit_handler(request: Request):
         """Validate input, save files, and execute the function."""
