@@ -1,8 +1,7 @@
 # 11_multiple
 
-Multiple functions: list, groups.
+Multiple functions: list.
 
 ## Files
 
 - `01_list.py`
-- `02_groups.py`

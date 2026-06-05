@@ -71,6 +71,12 @@ This release is a big simplification pass. The goal: remove features that can be
   (`host.mount("/tools", create_app(visible))` /
   `host.mount("/api", create_app(internal))`), which composes cleaner than a
   per-function flag.
+- **Function groups** — passing a dict (or nested dicts) to `run()`/`create_app()`
+  to build collapsible, slug-prefixed navigation groups is gone. `run()` now
+  accepts only a single function or a flat list; every function lives at its own
+  top-level `/<slug>`. To separate sets of tools, mount several `create_app()`
+  apps under different FastAPI paths instead — it's clearer and removes a
+  confusing nesting mechanism.
 
 ### Fixed
 - **Internal URLs are now prefix-aware (work under a `root_path` / when mounted)** — the HTML/JS emitted absolute, root-anchored URLs (`/submit`, `/download/<id>`, `/_functoweb/static/...`, navigation/index links). Behind a reverse proxy with a real `root_path`, or under `app.mount("/tools", ...)`, those pointed at the domain root and broke styling, form submit, navigation and downloads. URLs are now derived per request from `request.scope["root_path"]` and prepended to internal paths (templates receive a `prefix`; the frontend reads `window.__functoweb_prefix`). The SSE payload is unchanged, as is `/doc`, the API contract and `run()`'s public signature. This also paves the way for the mountable `create_app()` added in this release.

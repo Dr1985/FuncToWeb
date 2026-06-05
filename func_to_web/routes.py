@@ -8,7 +8,6 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 from .builder import render_index
 from .models import FunctionMetadata, NormalizedInput
 from .core.docs import build_doc
-from .core.normalization import get_all_functions
 from .core.return_file_handler import get_returned_file, maybe_cleanup
 from .route_handlers import create_handlers
 
@@ -50,22 +49,12 @@ def register_navigation_routes(
     returns_lifetime: int,
     stream_prints: bool,
 ) -> None:
-    """Recursively register routes for all navigation items."""
-    # Resolve all functions once, then match them by slug.
-    all_functions = get_all_functions(app_input.items)
-
+    """Register routes for all navigation items."""
     for item in nav_items:
-        if item["type"] == "function":
-            meta = next((m for m in all_functions if m.slug == item["slug"]), None)
-            if meta:
-                register_function_routes(
-                    app, meta, app_input, item["url"],
-                    uploads_dir=uploads_dir, max_file_size=max_file_size,
-                    returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
-                )
-        else:
-            register_navigation_routes(
-                app, item["children"], app_input,
+        meta = next((m for m in app_input.items if m.slug == item["slug"]), None)
+        if meta:
+            register_function_routes(
+                app, meta, app_input, item["url"],
                 uploads_dir=uploads_dir, max_file_size=max_file_size,
                 returns_dir=returns_dir, returns_lifetime=returns_lifetime, stream_prints=stream_prints,
             )
@@ -82,13 +71,11 @@ def setup_multi_items(
     stream_prints: bool,
 ) -> None:
 
-    top_level_functions = [item for item in app_input.navigation_data if item["type"] == "function"]
-
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
         prefix = request.scope.get("root_path", "")
-        if len(top_level_functions) == 1:
-            return RedirectResponse(url=f"{prefix}{top_level_functions[0]['url']}")
+        if len(app_input.navigation_data) == 1:
+            return RedirectResponse(url=f"{prefix}{app_input.navigation_data[0]['url']}")
         return render_index(app_input, prefix=prefix)
 
     register_navigation_routes(

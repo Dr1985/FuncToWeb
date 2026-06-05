@@ -14,17 +14,6 @@ _jinja_env = Environment(
 )
 
 
-def _count_functions(navigation_data: list) -> int:
-    """Count functions in the nav tree."""
-    count = 0
-    for item in navigation_data or []:
-        if item["type"] == "function":
-            count += 1
-        else:
-            count += _count_functions(item.get("children", []))
-    return count
-
-
 def render_page(
     params: list[ParamMetadata],
     meta: FunctionMetadata,
@@ -49,7 +38,7 @@ def render_page(
 
     # Hide sidebar if there are fewer than 2 functions to navigate to
     navigation_data = app_input.navigation_data
-    if _count_functions(navigation_data) < 2:
+    if not navigation_data or len(navigation_data) < 2:
         navigation_data = None
 
     return _jinja_env.get_template("page.html").render(

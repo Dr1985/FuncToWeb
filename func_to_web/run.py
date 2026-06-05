@@ -137,7 +137,7 @@ def run(
     directly and compose with FastAPI.
 
     Args:
-        func: Single function, FunctionMetadata, or list of functions/groups.
+        func: Single function, FunctionMetadata, or list of functions.
         host: Server host address.
         port: Server port.
         app_title: Custom application title.

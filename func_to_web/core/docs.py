@@ -1,6 +1,5 @@
 import json
 
-from .normalization import get_all_functions
 from ..route_handlers import _analyze
 
 
@@ -104,7 +103,7 @@ def build_doc(app_input) -> str:
     if app_input.single_function:
         funcs = [app_input.single_function]
     else:
-        funcs = get_all_functions(app_input.items)
+        funcs = app_input.items
 
     parts = [_INTRO]
     for meta in funcs:

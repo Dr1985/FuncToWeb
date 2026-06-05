@@ -78,10 +78,8 @@ def validate_slug(slug: str) -> None:
 
 
 def detect_input_type(func_input: Any) -> str:
-    """Detect if input is 'single', 'multiple', or 'grouped'."""
-    if isinstance(func_input, dict):
-        return "grouped"
-    elif isinstance(func_input, list):
+    """Detect if input is 'single' or 'multiple'."""
+    if isinstance(func_input, list):
         return "multiple"
     return "single"
 

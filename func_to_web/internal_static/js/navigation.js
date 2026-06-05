@@ -23,14 +23,6 @@ window.closeSidebarMobile = function() {
     if (overlay) overlay.classList.remove('active');
 };
 
-window.toggleNavGroup = function(button) {
-    button.parentElement.classList.toggle('active');
-};
-
-window.toggleSubgroup = function(button) {
-    button.parentElement.classList.toggle('active');
-};
-
 let sidebarHidden = false;
 let hiddenAtWidth = null;
 

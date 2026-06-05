@@ -1,44 +1,13 @@
-{# macros read `prefix` from the render context — switching to {% import %} without `with context` would silently break it #}
-{% macro render_nav_children(children) %}
-    {% for child in children %}
-        {% if child.type == 'function' %}
-            <a href="{{ prefix }}{{ child.url }}" class="functoweb-nav-link">{{ child.name }}</a>
-        {% else %}
-            <div class="functoweb-nav-subgroup">
-                <button class="functoweb-nav-subgroup-toggle" onclick="toggleSubgroup(this)">
-                    {{ child.name }}
-                    <span class="functoweb-nav-subarrow">▼</span>
-                </button>
-                <div class="functoweb-nav-subgroup-content">
-                    {{ render_nav_children(child.children) }}
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endmacro %}
-
 <nav class="functoweb-sidebar">
     <div class="functoweb-sidebar-header">
         <a href="{{ prefix }}/" class="functoweb-sidebar-close" aria-label="Ir a Home">
             <span class="functoweb-sidebar-close-icon">◄</span>
         </a>
     </div>
-    
+
     <div class="functoweb-sidebar-menu">
         {% for item in navigation_data %}
-            {% if item.type == 'function' %}
-                <a href="{{ prefix }}{{ item.url }}" class="functoweb-nav-link">{{ item.name }}</a>
-            {% else %}
-                <div class="functoweb-nav-group">
-                    <button class="functoweb-nav-group-toggle" onclick="toggleNavGroup(this)">
-                        <span class="functoweb-nav-group-name">{{ item.name }}</span>
-                        <span class="functoweb-nav-arrow">▼</span>
-                    </button>
-                    <div class="functoweb-nav-group-content">
-                        {{ render_nav_children(item.children) }}
-                    </div>
-                </div>
-            {% endif %}
+        <a href="{{ prefix }}{{ item.url }}" class="functoweb-nav-link">{{ item.name }}</a>
         {% endfor %}
     </div>
 </nav>

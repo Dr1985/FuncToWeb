@@ -65,12 +65,7 @@
     --functoweb-nav-link-font-size: 0.9375rem;
     --functoweb-nav-link-font-weight: 500;
     --functoweb-nav-link-border-radius: 8px;
-    --functoweb-nav-group-padding: 0.625rem 1rem;
-    --functoweb-nav-group-font-size: 0.875rem;
-    --functoweb-nav-group-font-weight: 600;
-    --functoweb-nav-subgroup-padding-left: 1rem;
-    --functoweb-nav-arrow-size: 0.75rem;
-    
+
     /* ===== ITEMS (INDEX) ===== */
     --functoweb-items-gap: 1rem;
     --functoweb-items-margin-top: 1.5rem;
@@ -86,16 +81,7 @@
     --functoweb-card-description-line-height: 1.5;
     --functoweb-card-hover-translate: -2px;
     --functoweb-card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    
-    /* ===== GROUPS (INDEX) ===== */
-    --functoweb-group-border-radius: 12px;
-    --functoweb-group-border-width: 2px;
-    --functoweb-group-header-padding: 1rem 1.25rem;
-    --functoweb-group-header-font-size: 1.125rem;
-    --functoweb-group-header-font-weight: 650;
-    --functoweb-group-content-padding: 1rem;
-    --functoweb-group-icon-size: 1.125rem;
-    
+
     /* ===== SHARED SURFACE COLORS - LIGHT ===== */
     --functoweb-surface-bg-light: #fff;
     --functoweb-surface-border-light: #d1d5db;

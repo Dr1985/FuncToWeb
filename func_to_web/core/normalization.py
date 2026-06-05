@@ -2,7 +2,7 @@ from typing import Any, Callable
 from pathlib import Path
 
 from ..models import FunctionMetadata, NormalizedInput
-from .utils import slugify, detect_input_type, encode_favicon_to_base64, validate_css_vars
+from .utils import detect_input_type, encode_favicon_to_base64, validate_css_vars
 
 
 def normalize_input(
@@ -50,48 +50,12 @@ def normalize_function(
     return FunctionMetadata(function=func_or_meta)
 
 
-def normalize_items(items: list, current_path: str = "") -> list:
-    """Normalize nested function/group input."""
+def normalize_items(items: list) -> list:
+    """Normalize a flat list of function inputs to FunctionMetadata."""
     if not isinstance(items, list):
         raise TypeError(f"Items must be a list, got {type(items).__name__}")
 
-    normalized = []
-
-    for item in items:
-        if isinstance(item, dict):
-            if len(item) != 1:
-                raise ValueError(
-                    f"Group dict must have exactly one key-value pair, got {len(item)}"
-                )
-
-            subgroup_name = list(item.keys())[0]
-            subgroup_items = list(item.values())[0]
-
-            if not isinstance(subgroup_name, str):
-                raise TypeError(
-                    f"Group name must be string, got {type(subgroup_name).__name__}"
-                )
-
-            if not isinstance(subgroup_items, list):
-                raise TypeError(
-                    f"Group items must be a list, got {type(subgroup_items).__name__}"
-                )
-
-            subgroup_slug = slugify(subgroup_name)
-            new_path = f"{current_path}/{subgroup_slug}" if current_path else subgroup_slug
-
-            normalized.append({
-                "type": "subgroup",
-                "name": subgroup_name,
-                "slug": subgroup_slug,
-                "data": normalize_items(subgroup_items, new_path),
-            })
-        else:
-            meta = normalize_function(item)
-            normalized.append({
-                "type": "function",
-                "data": meta,
-            })
+    normalized = [normalize_function(item) for item in items]
 
     if not normalized:
         raise ValueError("Items list cannot be empty")
@@ -99,61 +63,26 @@ def normalize_items(items: list, current_path: str = "") -> list:
     return normalized
 
 
-def build_navigation_structure(
-    items: list,
-    path_prefix: str = "",
-    _seen_urls: set | None = None
-) -> list[dict]:
-    """Build the navigation tree and validate route uniqueness."""
-    if _seen_urls is None:
-        _seen_urls = set()
-
+def build_navigation_structure(items: list) -> list[dict]:
+    """Build the navigation list and validate route uniqueness."""
+    seen_urls = set()
     nav_items = []
 
-    for item in items:
-        if item["type"] == "function":
-            meta = item["data"]
-            url = f"/{meta.slug}" if not path_prefix else f"/{path_prefix}/{meta.slug}"
+    for meta in items:
+        url = f"/{meta.slug}"
 
-            if url in _seen_urls:
-                raise ValueError(
-                    f"Duplicate URL '{url}' detected. "
-                    f"Function '{meta.name}' conflicts with another function at the same path."
-                )
-            _seen_urls.add(url)
+        if url in seen_urls:
+            raise ValueError(
+                f"Duplicate URL '{url}' detected. "
+                f"Function '{meta.name}' conflicts with another function at the same path."
+            )
+        seen_urls.add(url)
 
-            nav_items.append({
-                "type": "function",
-                "name": meta.name,
-                "slug": meta.slug,
-                "description": meta.description,
-                "url": url,
-                "path": path_prefix,
-            })
-        else:
-            subgroup_slug = item["slug"]
-            sub_path = f"{path_prefix}/{subgroup_slug}" if path_prefix else subgroup_slug
-
-            children = build_navigation_structure(item["data"], sub_path, _seen_urls)
-
-            nav_items.append({
-                "type": "subgroup",
-                "name": item["name"],
-                "slug": subgroup_slug,
-                "is_group": True,
-                "children": children,
-                "path": sub_path,
-            })
+        nav_items.append({
+            "name": meta.name,
+            "slug": meta.slug,
+            "description": meta.description,
+            "url": url,
+        })
 
     return nav_items
-
-
-def get_all_functions(items: list) -> list:
-    """Collect all FunctionMetadata objects from a nested item tree."""
-    functions = []
-    for item in items:
-        if item["type"] == "function":
-            functions.append(item["data"])
-        else:
-            functions.extend(get_all_functions(item["data"]))
-    return functions
