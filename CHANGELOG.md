@@ -2,9 +2,9 @@
 
 ## [1.5.0] - 2026-06-04
 
-This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and expose a cleaner API for building SPAs.
+This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and make FuncToWeb composable.
 
-1.5.0 is the update that takes FuncToWeb from "tool for spinning up mini programs" to "backend for SPA web apps" — without losing anything from its original mode. FuncToWeb is still the same as day one, just more powerful: the auto-generated form UI, single/multi function apps, and everything you already use keep working exactly as before.
+1.5.0 takes FuncToWeb from "tool for spinning up mini programs" to "a library you can use both ways": `run()` serves your functions standalone, exactly as it always has, and the new `create_app()` returns a plain FastAPI app you can mount inside your own. Nothing from the original mode is lost — the auto-generated form UI, single/multi function apps, and everything you already use keep working exactly as before.
 
 ### Added
 - `create_app()`: builds the FuncToWeb FastAPI application without starting a
