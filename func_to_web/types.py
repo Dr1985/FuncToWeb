@@ -15,6 +15,9 @@ __all__ = [
     # deliberate re-exports
     "Field",
     "Annotated",
+    "Literal",
+    "date",
+    "time",
     # this module
     "FileResponse",
     "ActionTable",
