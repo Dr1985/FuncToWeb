@@ -1,8 +1,7 @@
+import asyncio
 import uuid
 from pathlib import Path
 from typing import Any
-
-import aiofiles
 
 CHUNK_SIZE = 8 * 1024 * 1024
 
@@ -24,7 +23,7 @@ async def save_uploaded_file(
     bytes_written = 0
 
     try:
-        async with aiofiles.open(file_path, 'wb') as f:
+        with open(file_path, 'wb') as f:
             while chunk := await uploaded_file.read(CHUNK_SIZE):
                 bytes_written += len(chunk)
 
@@ -34,7 +33,9 @@ async def save_uploaded_file(
                         f"(max: {max_file_size / (1024*1024):.1f} MB)"
                     )
 
-                await f.write(chunk)
+                # Offload the blocking write to a thread so the event loop stays
+                # responsive (8 MB chunks make the thread-hop overhead negligible).
+                await asyncio.to_thread(f.write, chunk)
     except:
         _remove_folder(folder_path)
         raise

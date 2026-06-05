@@ -18,7 +18,6 @@ dependencies = [
     "uvicorn",                # ASGI server that run() uses to serve the app
     "jinja2",                 # renders the HTML templates (templates/*.html)
     "python-multipart",       # lets FastAPI parse multipart/form-data (form submits and file uploads)
-    "aiofiles",               # async file writes when saving uploaded files
     "starlette<1.0.0",        # FastAPI's ASGI toolkit, used directly for UploadFile; pinned <1.0.0 for compatibility
 ]
 

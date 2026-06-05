@@ -37,6 +37,14 @@
   state, no locks — the same principle as the 1.5.0 globals cleanup, applied to
   the last place mutable shared state remained.
 
+### Removed
+- **`aiofiles` dependency dropped** — it was used in a single place, the chunked
+  write loop in `save_uploaded_file`. The same non-blocking behavior is now
+  achieved with a plain `open()` and `await asyncio.to_thread(f.write, chunk)`
+  (the upload read stays `await uploaded_file.read(...)` via Starlette's
+  `UploadFile`). At 8 MB chunks the thread-hop overhead is negligible. One fewer
+  dependency, no behavior change.
+
 ## [1.5.0] - 2026-06-04
 
 This release is a big simplification pass. The goal: remove features that can be done more elegantly other ways, and make FuncToWeb composable.
